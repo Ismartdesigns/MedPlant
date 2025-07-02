@@ -12,13 +12,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Leaf, Bell, Settings, LogOut } from "lucide-react"
+import { Spinner } from "@/components/Spinner"
 
 interface HeaderProps {
-  userData: { first_name: string; email: string } | null;
+  userData: { first_name: string; last_name: string; email: string } | null;
   onLogout: () => void;
+  isLoading: boolean;
 }
 
-export function Header({ userData, onLogout }: HeaderProps) {
+export function Header({ userData, onLogout, isLoading }: HeaderProps) {
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,17 +48,27 @@ export function Header({ userData, onLogout }: HeaderProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
                   <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-emerald-100 text-emerald-700">{userData ? userData.first_name.charAt(0) : 'U'}</AvatarFallback>
+                    <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                      {userData ? userData.first_name.charAt(0) : 'U'}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{userData ? userData.first_name : 'User'}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {userData ? userData.email : 'user@example.com'}
-                    </p>
+                    {isLoading ? (
+                      <Spinner />
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium leading-none">
+                          {userData ? `${userData.first_name} ${userData.last_name}` : 'User'}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {userData ? userData.email : 'user@example.com'}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

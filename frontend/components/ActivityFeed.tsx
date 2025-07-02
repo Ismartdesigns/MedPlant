@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Activity } from "lucide-react" // Assuming you have an icon for activity
+import { Activity } from "lucide-react"
 
 interface UserActivity {
   id: number

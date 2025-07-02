@@ -63,7 +63,14 @@ export function QuickActions() {
             <div>
               <h3 className="text-xl font-semibold text-gray-900">Upload Image</h3>
               <p className="text-gray-600">Upload from gallery</p>
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="mt-2" />
+              <label className="mt-2 cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
           </div>
         </CardContent>

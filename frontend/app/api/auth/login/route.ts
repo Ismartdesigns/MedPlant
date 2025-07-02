@@ -5,7 +5,7 @@ import { loginSchema } from '@/lib/validations/auth'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-
+    
     // Validate input
     const result = loginSchema.safeParse(body)
     if (!result.success) {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const { email, password } = result.data
 
     // Call backend API with form-encoded data
-    const response = await fetch('http://localhost:8000/api/auth/login', {
+    const response = await fetch(`${process.env.FASTAPI_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

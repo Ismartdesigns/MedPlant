@@ -35,13 +35,13 @@ export function RecentIdentifications() {
       try {
         const response = await fetch('/api/user/identifications', {
           method: 'GET',
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
         })
         if (!response.ok) {
           throw new Error('Failed to fetch identifications')
         }
         const data = await response.json()
-        setIdentifications(data) // Assuming data is an array of PlantIdentification
+        setIdentifications(data)
       } catch (error) {
         console.error(error)
       }

@@ -44,7 +44,7 @@ model = PlantClassifier(model_path=MODEL_PATH)
 
 # Security setup
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")  # Fixed path
 
 # Security functions
 def get_password_hash(password: str) -> str:
@@ -52,10 +52,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -130,21 +127,16 @@ async def identify_plant(
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/plants", response_model=List[Plant])
-async def get_plants(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
+async def get_plants(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        plants = db.exec(select(Plant).where(Plant.user_id == current_user.id)).all()
-        return plants
+        return db.exec(select(Plant).where(Plant.user_id == current_user.id)).all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/user/{user_id}/plants", response_model=List[Plant])
 async def get_user_plants(user_id: int, db: Session = Depends(get_db)):
     try:
-        plants = db.exec(select(Plant).where(Plant.user_id == user_id)).all()
-        return plants
+        return db.exec(select(Plant).where(Plant.user_id == user_id)).all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -155,20 +147,19 @@ async def get_user_stats(current_user: User = Depends(get_current_user), db: Ses
         identification_count = db.exec(select(PlantIdentification).where(PlantIdentification.user_id == current_user.id)).count()
         return {
             "plants_identified": identification_count,
-            "accuracyRate": "97%",  # This should be calculated based on your logic
+            "accuracyRate": "97%",  # Replace with actual logic if needed
             "saved_plants": plant_count,
-            "thisMonth": 18  # This should be calculated based on your logic
+            "thisMonth": 18  # Replace with dynamic calculation if needed
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error. Please try again later.")
 
 @app.get("/api/user/identifications")
 async def get_user_identifications(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        identifications = db.exec(select(PlantIdentification).where(PlantIdentification.user_id == current_user.id)).all()
-        return identifications
+        return db.exec(select(PlantIdentification).where(PlantIdentification.user_id == current_user.id)).all()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error. Please try again later.")
 
 @app.post("/api/auth/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -194,48 +185,26 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             }
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/auth/signup")
 async def signup(user: UserCreate, db: Session = Depends(get_db)):
     try:
-        # Check if the email already exists in the database
-        existing_user = db.exec(select(User).where(User.email == user.email)).first()
-        if existing_user:
-            raise HTTPException(
-                status_code=400,
-                detail="Email already registered"
-            )
-        
-        # Check if the password and confirm_password match
+        if db.exec(select(User).where(User.email == user.email)).first():
+            raise HTTPException(status_code=400, detail="Email already registered")
         if user.password != user.confirm_password:
-            raise HTTPException(
-                status_code=400,
-                detail="Passwords do not match"
-            )
-        
-        # Hash the password before storing it
-        hashed_password = pwd_context.hash(user.password)
-        
-        # Create a new user instance
+            raise HTTPException(status_code=400, detail="Passwords do not match")
+        hashed_password = get_password_hash(user.password)
         db_user = User(
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
             hashed_password=hashed_password
         )
-        
-        # Add the new user to the database
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        
-        # Generate JWT token after successful signup
         access_token = create_access_token(data={"sub": db_user.email})
-        
         return {
             "message": "User created successfully",
             "user": {
@@ -243,46 +212,39 @@ async def signup(user: UserCreate, db: Session = Depends(get_db)):
                 "first_name": db_user.first_name,
                 "last_name": db_user.last_name
             },
-            "access_token": access_token,  # Return the JWT token
+            "access_token": access_token
         }
     except Exception as e:
         db.rollback()
-        print(f"Error during signup: {str(e)}")  # Log the error
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/auth/validate", response_model=User)
 async def validate_token(current_user: User = Depends(get_current_user)):
     return current_user
 
-@app.post("/api/auth/logout")
-async def logout(response: Response):
-    # Invalidate the user's session or token by removing the cookie
-    response.delete_cookie(key="session")  # Assuming 'session' is the cookie name
-    return {"message": "Successfully logged out"}
-
 @app.get("/api/user/plant_of_the_day")
 async def get_plant_of_the_day(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Logic to fetch the plant of the day
-    plant_of_the_day = db.exec(select(Plant).where(Plant.is_plant_of_the_day == True)).first()
-    return plant_of_the_day
+    try:
+        return db.exec(select(Plant).where(Plant.is_plant_of_the_day == True)).first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error. Please try again later.")
 
 @app.get("/api/user/progress")
 async def get_user_progress(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Logic to fetch user progress
-    progress = {
-        "plants_identified": db.exec(select(PlantIdentification).where(PlantIdentification.user_id == current_user.id)).count(),
-        "favorites": db.exec(select(Plant).where(Plant.user_id == current_user.id, Plant.is_favorite == True)).count(),
-    }
-    return progress
+    try:
+        return {
+            "plants_identified": db.exec(select(PlantIdentification).where(PlantIdentification.user_id == current_user.id)).count(),
+            "favorites": db.exec(select(Plant).where(Plant.user_id == current_user.id, Plant.is_favorite == True)).count(),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error. Please try again later.")
 
 @app.get("/api/user/activity_feed")
 async def get_activity_feed(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Logic to fetch user activity feed
-    activities = db.exec(select(Activity).where(Activity.user_id == current_user.id)).all()
-    return activities
+    try:
+        return db.exec(select(Activity).where(Activity.user_id == current_user.id)).all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error. Please try again later.")
 
 if __name__ == "__main__":
     try:
@@ -290,4 +252,3 @@ if __name__ == "__main__":
         uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
     except KeyboardInterrupt:
         print("Process interrupted. Cleaning up...")
-        # Perform any necessary cleanup here
