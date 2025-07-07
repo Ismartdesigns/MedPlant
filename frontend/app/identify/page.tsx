@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useRef, useCallback, useEffect } from "react"
-import { IdentifyHeader } from "@/components/IdentifyHeader"
+import { Header } from "@/components/Header"
 import { CameraSection } from "@/components/CameraSection"
 import { UploadSection } from "@/components/UploadSection"
 import { ImagePreview } from "@/components/ImagePreview"
@@ -233,7 +233,13 @@ export default function IdentifyPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-      <IdentifyHeader userData={userData} />
+      <Header 
+  userData={userData} 
+  onLogout={handleLogout} 
+  isLoading={isLoading} 
+  variant="identify" 
+  showBackButton={true} 
+/>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Title Section */}

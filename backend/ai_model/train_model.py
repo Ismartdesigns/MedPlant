@@ -10,48 +10,94 @@ from tqdm import tqdm
 import polars as pl
 import numpy as np
 from plant_classifier import PlantClassifier
+import requests
+from io import BytesIO
 
 class MedicinalPlantDataset(Dataset):
-    def __init__(self, data, transform=None):
-        self.data = data
+    def __init__(self, plant_data, transform=None):
+        self.plant_data = plant_data
         self.transform = transform
-        # Create class mapping using Polars
-        self.class_to_idx = {plant['scientific_name']: idx 
-                           for idx, plant in enumerate(set(data))}
-        
+
     def __len__(self):
-        return len(self.data)
-    
+        return len(self.plant_data)
+
     def __getitem__(self, idx):
-        plant = self.data[idx]
-        # Construct the image path based on the folder structure
-        # Assuming the folder name is the scientific name or a category
-        folder_name = plant['scientific_name'].replace(" ", "_")  # Replace spaces with underscores for folder names
-        image_path = f"backend/ai_model/images/{folder_name}/{plant['image_name']}"
+        plant = self.plant_data[idx]
+        # Use image_url as URL instead of local path
+        image_url = plant['image_url']
+        
+        # Download and load image from URL
         try:
-            image = Image.open(image_path).convert('RGB')  # Ensure image is in RGB format
-        except FileNotFoundError:
-            print(f"Warning: Image not found at {image_path}. Returning a blank image.")
-            image = Image.new('RGB', (380, 380), color=(255, 255, 255))  # Return a blank image
+            response = requests.get(image_url)
+            response.raise_for_status()
+            image = Image.open(BytesIO(response.content)).convert('RGB')
+        except Exception as e:
+            print(f"Error loading image {image_url}: {e}")
+            # Return a default image or skip
+            image = Image.new('RGB', (224, 224), color=(0, 0, 0))
         
         if self.transform:
             image = self.transform(image)
             
-        label = self.class_to_idx[plant['scientific_name']]
-        return image, label
+        # Use scientific_name as label (adjust based on your PlantClassifier requirements)
+        return image, plant['scientific_name']
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=10, device='cuda'):
-    best_val_acc = 0.0
+def fetch_plant_data(api_key, num_plants=200):
+    plants_data = []
+    page = 1
     
+    while len(plants_data) < num_plants:
+        try:
+            # Fetch plant list from Trefle API
+            url = f"https://trefle.io/api/v1/species?page={page}&token={api_key}"
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            
+            for plant in data.get('data', []):
+                # Get detailed plant info
+                detail_url = f"https://trefle.io/api/v1/species/{plant['id']}?token={api_key}"
+                detail_response = requests.get(detail_url)
+                detail_response.raise_for_status()
+                detail_data = detail_response.json().get('data', {})
+                
+                if 'image_url' in detail_data and detail_data['image_url']:
+                    plants_data.append({
+                        'scientific_name': detail_data.get('scientific_name', ''),
+                        'common_name': detail_data.get('common_name', ''),
+                        'image_url': detail_data['image_url'],
+                        'type': detail_data.get('growth', {}).get('growth_form', ''),
+                        'cycle': detail_data.get('growth', {}).get('duration', '')
+                    })
+                
+                if len(plants_data) >= num_plants:
+                    break
+            
+            page += 1
+            
+            # Check if there are more pages
+            if not data.get('links', {}).get('next'):
+                break
+                
+        except Exception as e:
+            print(f"Error fetching data: {e}")
+            break
+    
+    # Save to JSON file
+    with open('medicinal_plant_dataset.json', 'w', encoding='utf-8') as f:
+        json.dump(plants_data, f, ensure_ascii=False, indent=2)
+    
+    return plants_data
+
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, device):
+    best_val_acc = 0.0
     for epoch in range(num_epochs):
-        # Training phase
         model.train()
         running_loss = 0.0
-        correct = 0
-        total = 0
+        train_correct = 0
+        train_total = 0
         
-        train_pbar = tqdm(train_loader, desc=f'Epoch {epoch+1}/{num_epochs} [Train]')
-        for images, labels in train_pbar:
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
             images, labels = images.to(device), labels.to(device)
             
             optimizer.zero_grad()
@@ -61,53 +107,53 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             optimizer.step()
             
             running_loss += loss.item()
-            _, predicted = outputs.max(1)
-            total += labels.size(0)
-            correct += predicted.eq(labels).sum().item()
-            
-            train_pbar.set_postfix({
-                'loss': running_loss/total,
-                'acc': 100.*correct/total
-            })
+            _, predicted = torch.max(outputs, 1)
+            train_total += labels.size(0)
+            train_correct += (predicted == labels).sum().item()
+        
+        train_acc = 100 * train_correct / train_total
+        print(f"Epoch {epoch+1}, Train Loss: {running_loss/len(train_loader):.4f}, Train Acc: {train_acc:.2f}%")
         
         # Validation phase
         model.eval()
-        val_loss = 0.0
         val_correct = 0
         val_total = 0
+        val_loss = 0.0
         
         with torch.no_grad():
-            val_pbar = tqdm(val_loader, desc=f'Epoch {epoch+1}/{num_epochs} [Val]')
-            for images, labels in val_pbar:
+            for images, labels in val_loader:
                 images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 loss = criterion(outputs, labels)
-                
                 val_loss += loss.item()
-                _, predicted = outputs.max(1)
+                _, predicted = torch.max(outputs, 1)
                 val_total += labels.size(0)
-                val_correct += predicted.eq(labels).sum().item()
-                
-                val_pbar.set_postfix({
-                    'loss': val_loss/val_total,
-                    'acc': 100.*val_correct/val_total
-                })
+                val_correct += (predicted == labels).sum().item()
         
-        val_acc = 100.*val_correct/val_total
+        val_acc = 100 * val_correct / val_total
+        print(f"Validation Loss: {val_loss/len(val_loader):.4f}, Validation Acc: {val_acc:.2f}%")
+        
+        # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save(model.state_dict(), 'best_model.pth')
-            print(f'New best model saved with validation accuracy: {val_acc:.2f}%')
+            torch.save(model.state_dict(), 'best_plant_classifier.pth')
 
 def main():
-    # Load your dataset using Polars
-    df = pl.read_json('medicinal_plant_dataset.csv.json')
+    # API configuration
+    API_KEY = os.getenv('TREFLE_API_KEY', 'your_trefle_api_key')  # Replace with your Trefle API key or use env variable
     
-    # Convert to list of dictionaries for compatibility
-    plant_data = df.to_dicts()
+    # Fetch plant data from Trefle API
+    print("Fetching plant data...")
+    plant_data = fetch_plant_data(API_KEY, num_plants=200)
     
-    # Split data into train and validation sets using Polars
-    # Create a random column for splitting
+    # Save the fetched data
+    with open('medicinal_plant_dataset.json', 'w') as f:
+        json.dump(plant_data, f)
+    
+    # Convert to Polars DataFrame
+    df = pl.DataFrame(plant_data)
+    
+    # Split data into train and validation sets
     df = df.with_columns(pl.Series(name="random", values=np.random.random(len(df))))
     train_df = df.filter(pl.col("random") < 0.8)
     val_df = df.filter(pl.col("random") >= 0.8)
@@ -137,7 +183,7 @@ def main():
     
     # Initialize model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = PlantClassifier(model_path=None)  # Modified to accept None for initial training
+    model = PlantClassifier(model_path=None)  # Assumes PlantClassifier accepts None for initial training
     model = model.to(device)
     
     # Define loss function and optimizer
@@ -148,4 +194,4 @@ def main():
     train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs=20, device=device)
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -7,7 +7,7 @@ import torchvision.models as models
 from torch import nn
 from sqlmodel import Session, select
 from sqlalchemy import func
-from database import SessionLocal
+from backend.database import SessionLocal
 from models import MedicinalPlant
 from torchvision.models import EfficientNet_B4_Weights  # Import the weights enum
 

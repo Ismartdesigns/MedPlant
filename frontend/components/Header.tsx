@@ -11,28 +11,56 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Leaf, Bell, Settings, LogOut } from "lucide-react"
+import { Leaf, Bell, Settings, LogOut, ArrowLeft, Zap } from "lucide-react"
 import { Spinner } from "@/components/Spinner"
+import Link from "next/link"
 
 interface HeaderProps {
-  userData: { first_name: string; last_name: string; email: string } | null;
-  onLogout: () => void;
-  isLoading: boolean;
+  userData: { first_name: string; last_name: string; email: string } | null
+  onLogout: () => void
+  isLoading: boolean
+  showBackButton?: boolean
+  backUrl?: string
+  pageBadge?: {
+    icon: typeof Leaf | typeof Zap
+    text: string
+  }
 }
 
-export function Header({ userData, onLogout, isLoading }: HeaderProps) {
+export function Header({ 
+  userData, 
+  onLogout, 
+  isLoading,
+  showBackButton = false,
+  backUrl = "/dashboard",
+  pageBadge
+}: HeaderProps) {
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-emerald-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
+            {showBackButton && (
+              <Link 
+                href={backUrl} 
+                className="flex items-center text-emerald-600 hover:text-emerald-700 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Back to Dashboard
+              </Link>
+            )}
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center transform rotate-12">
                 <Leaf className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-gray-900">MedPlant</span>
             </div>
-            <Badge className="bg-emerald-100 text-emerald-700">Pro</Badge>
+            {pageBadge && (
+              <Badge className="bg-emerald-100 text-emerald-700">
+                {React.createElement(pageBadge.icon, { className: "w-3 h-3 mr-1" })}
+                {pageBadge.text}
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center space-x-4">

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { PlantsHeader } from "@/components/plants/PlantsHeader"
+import { Header } from "@/components/plants/Header"
 import { NigerianPlantBrowser } from "@/components/plants/plant-browser"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
@@ -68,7 +68,13 @@ export default function PlantsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-      <PlantsHeader userData={userData} onLogout={handleLogout} isLoading={isLoading} />
+      <Header 
+  userData={userData} 
+  onLogout={handleLogout} 
+  isLoading={isLoading} 
+  variant="plants" 
+  showBackButton={true} 
+/>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
