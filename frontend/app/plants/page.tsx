@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Header } from "@/components/plants/Header"
+import { Header } from "@/components/Header"
 import { NigerianPlantBrowser } from "@/components/plants/plant-browser"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
@@ -72,7 +72,6 @@ export default function PlantsPage() {
   userData={userData} 
   onLogout={handleLogout} 
   isLoading={isLoading} 
-  variant="plants" 
   showBackButton={true} 
 />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

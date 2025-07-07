@@ -6,7 +6,7 @@ from sqlmodel import select
 
 def load_plants():
     # Read the JSON file
-    with open('medicinal_plant_dataset.csv.json', 'r', encoding='utf-8') as f:
+    with open('medicinal_plant_dataset.json', 'r', encoding='utf-8') as f:
         plants_data = json.load(f)
     
     # Create a database session

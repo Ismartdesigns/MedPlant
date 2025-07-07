@@ -42,6 +42,29 @@ export default function IdentifyPage() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleLogout = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        throw new Error('Logout failed')
+      }
+      router.push('/login')
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "Please try again.",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }, [router, toast])
 
   // Validate user session on page load
   useEffect(() => {
@@ -237,7 +260,6 @@ export default function IdentifyPage() {
   userData={userData} 
   onLogout={handleLogout} 
   isLoading={isLoading} 
-  variant="identify" 
   showBackButton={true} 
 />
 

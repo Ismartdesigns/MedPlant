@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 # Get environment variables with defaults
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Admin123@localhost:5432/medplant?sslmode=prefer")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant?sslmode=prefer")
 MODEL_PATH = os.getenv("MODEL_PATH", "./ai_model/plant_classification_model")
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "TcqnjHDfLA7WbmV8Uex9rltKswFYQpJX")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")

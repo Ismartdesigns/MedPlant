@@ -8,20 +8,24 @@ from torch import nn
 from sqlmodel import Session, select
 from sqlalchemy import func
 from backend.database import SessionLocal
-from models import MedicinalPlant
+from backend.models import MedicinalPlant
 from torchvision.models import EfficientNet_B4_Weights  # Import the weights enum
 
-class PlantClassifier:
-    def __init__(self, model_path: str = None):
+class PlantClassifier(nn.Module):
+    def forward(self, x):
+        return self.model(x)
+    def __init__(self, model_path: str = None, num_classes: int = None):
+        super(PlantClassifier, self).__init__()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
         # Load pre-trained EfficientNet-B4 with updated weights parameter
         self.model = models.efficientnet_b4(weights=EfficientNet_B4_Weights.DEFAULT)
         
-        # Get number of classes from database using func.count()
-        with SessionLocal() as db:
-            num_classes = db.exec(select(func.count()).select_from(MedicinalPlant)).one()
-            num_classes = int(num_classes)
+        # If num_classes is not provided, get it from database
+        if num_classes is None:
+            with SessionLocal() as db:
+                num_classes = db.exec(select(func.count()).select_from(MedicinalPlant)).one()
+                num_classes = int(num_classes)
         
         # Modify the final layer for your number of plant classes
         self.model.classifier[1] = nn.Linear(self.model.classifier[1].in_features, num_classes)
