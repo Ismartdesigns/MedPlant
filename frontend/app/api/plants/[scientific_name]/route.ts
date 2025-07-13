@@ -1,24 +1,22 @@
-import { NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config';
 
 export async function GET(request: NextRequest, { params }: { params: { scientific_name: string } }) {
   const { scientific_name } = params;
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/plants/${scientific_name}`, {
-      credentials: 'include',
-      headers: {
-        'Cookie': request.headers.get('cookie') || '',
-      },
+    const response = await fetch(API_ENDPOINTS.plants.details(scientific_name), {
+      method: 'GET',
+      headers: getAuthHeaders(request.cookies.get('session')?.value),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch plant details');
-    }
-
-    const data = await response.json();
-    return Response.json(data);
+    const data = await handleApiResponse(response);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching plant details:', error);
-    return Response.json({ error: 'Failed to fetch plant details' }, { status: 500 });
+    console.error('Plant details error:', error);
+    return NextResponse.json(
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
+    );
   }
 }

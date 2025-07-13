@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { API_ENDPOINTS, getAuthHeaders } from '@/lib/api-config'
+import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config'
 
 export async function GET() {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('session')?.value
-    
+
     if (!token) {
       return NextResponse.json(
         { message: 'Authentication required' },
@@ -19,18 +19,13 @@ export async function GET() {
       headers: getAuthHeaders(token),
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status })
-    }
-
+    const data = await handleApiResponse(response)
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Auth validation error:', error)
+    console.error('Validation error:', error)
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
     )
   }
 }

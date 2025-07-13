@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { loginSchema } from '@/lib/validations/auth'
+import { API_ENDPOINTS, handleApiResponse } from '@/lib/api-config'
 
 export async function POST(request: Request) {
   try {
@@ -15,48 +16,32 @@ export async function POST(request: Request) {
       )
     }
 
-    const { email, password } = result.data
 
-    // Call backend API with form-encoded data
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/auth/login`, {
+    const response = await fetch(API_ENDPOINTS.auth.login, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
-        username: email,
-        password: password,
-      }),
+      body: JSON.stringify(result.data),
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { message: data.detail || data.message || 'Login failed' },
-        { status: response.status }
-      )
-    }
-
-    // Set secure HTTP-only cookie with JWT token
+    const data = await handleApiResponse(response)
+    
+    // Set the session cookie if login was successful
     const cookieStore = await cookies()
     cookieStore.set('session', data.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      sameSite: 'lax',
       path: '/',
     })
 
-    return NextResponse.json({ 
-      message: 'Login successful',
-      user: data.user
-    })
+    return NextResponse.json({ message: 'Login successful' })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
     )
   }
 }

@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config'
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('session')?.value
-    
+
     if (!token) {
       return NextResponse.json(
         { message: 'Authentication required' },
@@ -16,26 +14,18 @@ export async function POST(
       )
     }
 
-    const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000'
-    const response = await fetch(`${FASTAPI_URL}/api/user/identifications/${params.id}/favorite`, {
+    const response = await fetch(API_ENDPOINTS.user.favoriteIdentification(params.id), {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(token),
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to update favorite status')
-    }
-
-    const data = await response.json()
+    const data = await handleApiResponse(response)
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error updating favorite status:', error)
+    console.error('Favorite identification error:', error)
     return NextResponse.json(
-      { message: 'Failed to update favorite status' },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
     )
   }
 }

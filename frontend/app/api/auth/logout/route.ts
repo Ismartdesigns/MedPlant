@@ -1,28 +1,35 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config'
 
 export async function POST() {
   try {
-    // Clear the session cookie
-    const cookieStore = await cookies()
-    
-    // Delete the session cookie by setting it with past expiration
-    cookieStore.set('session', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 0, // Expire immediately
-      path: '/',
-    })
+    const cookieStore = cookies()
+    const token = (await cookieStore).get('session')?.value
 
-    return NextResponse.json({ 
-      message: 'Successfully logged out' 
-    })
+    if (token) {
+      // Call backend logout endpoint
+      const response = await fetch(API_ENDPOINTS.auth.logout, {
+        method: 'POST',
+        headers: getAuthHeaders(token),
+      })
+
+      await handleApiResponse(response)
+    }
+
+    // Clear the session cookie regardless of backend response
+    const response = NextResponse.json({ message: 'Logged out successfully' })
+    response.cookies.delete('session')
+    return response
+
   } catch (error) {
     console.error('Logout error:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+    // Still clear the cookie even if there's an error
+    const response = NextResponse.json(
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
     )
+    response.cookies.delete('session')
+    return response
   }
 }

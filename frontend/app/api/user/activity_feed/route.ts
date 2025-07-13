@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config'
 
 export async function GET() {
   try {
@@ -13,26 +14,18 @@ export async function GET() {
       )
     }
 
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/user/activity_feed`, {
+    const response = await fetch(API_ENDPOINTS.user.activityFeed, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(token),
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status })
-    }
-
+    const data = await handleApiResponse(response)
     return NextResponse.json(data)
   } catch (error) {
     console.error('Activity feed error:', error)
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : 'Internal server error' },
+      { status: error instanceof Response ? error.status : 500 }
     )
   }
 }
