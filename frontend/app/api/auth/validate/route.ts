@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { API_ENDPOINTS, getAuthHeaders } from '@/lib/api-config'
 
 export async function GET() {
   try {
@@ -13,12 +14,9 @@ export async function GET() {
       )
     }
 
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/auth/validate`, {
+    const response = await fetch(API_ENDPOINTS.auth.validate, {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(token),
     })
 
     const data = await response.json()
