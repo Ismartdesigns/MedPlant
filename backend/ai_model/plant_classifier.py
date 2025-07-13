@@ -16,7 +16,7 @@ class PlantClassifier(nn.Module):
         self.idx_to_label = {idx: name for name, idx in self.label_to_idx.items()} if self.label_to_idx else {}
         
         # Use ResNet18 as a base
-        self.base_model = torchvision.models.resnet18(pretrained=False)
+        self.base_model = torchvision.models.resnet18(weights=None)
         num_features = self.base_model.fc.in_features
         self.base_model.fc = nn.Linear(num_features, num_classes)
         
@@ -33,7 +33,7 @@ class PlantClassifier(nn.Module):
         # Load checkpoint if provided
         if model_path and os.path.exists(model_path):
             try:
-                checkpoint = torch.load(model_path, map_location=self.device)
+                checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
                 self.load_state_dict(checkpoint['model_state_dict'])
                 if 'label_to_idx' in checkpoint:
                     self.label_to_idx = checkpoint['label_to_idx']

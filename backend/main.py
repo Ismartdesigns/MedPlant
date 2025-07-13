@@ -36,8 +36,8 @@ cloudinary.config(
 # Get environment variables with defaults
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant?sslmode=prefer")
 MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(os.path.dirname(__file__), "ai_model", "best_plant_classifier.pth"))
-INATURALIST_DATA_PATH = os.getenv("INATURALIST_DATA_PATH", os.path.join(os.path.dirname(__file__), "inaturalist_plant_dataset.json"))
-MEDICINAL_DATA_PATH = os.getenv("MEDICINAL_DATA_PATH", os.path.join(os.path.dirname(__file__), "medicinal_plant_dataset.json"))
+INATURALIST_DATA_PATH = os.getenv("INATURALIST_DATA_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "inaturalist_plant_dataset.json"))
+MEDICINAL_DATA_PATH = os.getenv("MEDICINAL_DATA_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "medicinal_plant_dataset.json"))
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "TcqnjHDfLA7WbmV8Uex9rltKswFYQpJX")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
@@ -77,7 +77,7 @@ try:
     
     # Load trained model weights with strict loading and mapping
     if os.path.exists(MODEL_PATH):
-        checkpoint = torch.load(MODEL_PATH, map_location=device)
+        checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
         model_state_dict = checkpoint.get('model_state_dict', {})
         model.load_state_dict(model_state_dict, strict=False)  # Allow missing keys
         if 'label_to_idx' in checkpoint:
