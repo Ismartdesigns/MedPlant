@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-
+  reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -11,14 +10,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: '/api/:path*',
-      },
-    ];
-  },
-};
+  output: 'standalone', // Important for Vercel
+}
 
-export default nextConfig;
+module.exports = nextConfig
