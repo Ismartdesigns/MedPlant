@@ -35,9 +35,9 @@ cloudinary.config(
 
 # Get environment variables with defaults
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant?sslmode=prefer")
-MODEL_PATH = os.getenv("MODEL_PATH", "C:/xampp/htdocs/MedPlant/training_artifacts/best_plant_classifier.pth")
-INATURALIST_DATA_PATH = os.getenv("INATURALIST_DATA_PATH", "C:/xampp/htdocs/MedPlant/inaturalist_plant_dataset.json")
-MEDICINAL_DATA_PATH = os.getenv("MEDICINAL_DATA_PATH", "C:/xampp/htdocs/MedPlant/medicinal_plant_dataset.json")
+MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(os.path.dirname(__file__), "ai_model", "best_plant_classifier.pth"))
+INATURALIST_DATA_PATH = os.getenv("INATURALIST_DATA_PATH", os.path.join(os.path.dirname(__file__), "inaturalist_plant_dataset.json"))
+MEDICINAL_DATA_PATH = os.getenv("MEDICINAL_DATA_PATH", os.path.join(os.path.dirname(__file__), "medicinal_plant_dataset.json"))
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "TcqnjHDfLA7WbmV8Uex9rltKswFYQpJX")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
