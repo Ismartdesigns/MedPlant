@@ -5,7 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get DATABASE_URL from environment and modify for SQLAlchemy if needed
-db_url = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant")
+db_url = os.getenv("DATABASE_URL")
+if not db_url:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
+# Convert postgres:// to postgresql:// for SQLAlchemy
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 

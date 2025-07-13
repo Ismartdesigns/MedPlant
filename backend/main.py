@@ -34,7 +34,7 @@ cloudinary.config(
 )
 
 # Get environment variables with defaults
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant?sslmode=prefer")
+DATABASE_URL = os.getenv("DATABASE_URL")
 MODEL_PATH = os.getenv("MODEL_PATH", os.path.join(os.path.dirname(__file__), "ai_model", "best_plant_classifier.pth"))
 INATURALIST_DATA_PATH = os.getenv("INATURALIST_DATA_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "inaturalist_plant_dataset.json"))
 MEDICINAL_DATA_PATH = os.getenv("MEDICINAL_DATA_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "medicinal_plant_dataset.json"))
