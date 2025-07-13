@@ -4,9 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant")
+# Get DATABASE_URL from environment and modify for SQLAlchemy if needed
+db_url = os.getenv("DATABASE_URL", "postgresql://postgres:Ivy%40123@localhost:5432/medplant")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(db_url, pool_pre_ping=True)
 
 # Use SQLModel as the base class
 Base = SQLModel
@@ -19,4 +22,4 @@ def create_db_and_tables():
 
 def get_db():
     with Session(engine) as session:
-        yield session 
+        yield session
