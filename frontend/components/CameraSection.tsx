@@ -55,11 +55,25 @@ export function CameraSection({
     try {
       setCameraError(null)
 
+      // Check if mediaDevices is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API is not supported on this device')
+      }
+
       // Stop existing stream
       if (stream) {
         stream.getTracks().forEach((track) => track.stop())
       }
 
+      // Check available devices
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const videoDevices = devices.filter(device => device.kind === 'videoinput')
+
+      if (videoDevices.length === 0) {
+        throw new Error('No camera devices found')
+      }
+
+      // Set optimal constraints
       const constraints: CameraConstraints = {
         video: {
           width: { ideal: 1920 },
@@ -69,16 +83,32 @@ export function CameraSection({
       }
 
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+      
+      // Verify stream is active and has video tracks
+      if (!mediaStream || mediaStream.getVideoTracks().length === 0) {
+        throw new Error('Failed to initialize camera stream')
+      }
+
       setStream(mediaStream)
       setHasPermission(true)
 
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream
+        
+        // Handle video loading errors
+        videoRef.current.onerror = () => {
+          setCameraError('Failed to display camera stream')
+          setHasPermission(false)
+        }
       }
     } catch (error) {
-      console.error("Error accessing camera:", error)
+      console.error('Error accessing camera:', error)
       setHasPermission(false)
-      setCameraError("Unable to access camera. Please check permissions.")
+      setCameraError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to access camera. Please check permissions.'
+      )
     }
   }, [facingMode, stream, setStream, setCameraError, setHasPermission])
 
@@ -87,22 +117,45 @@ export function CameraSection({
 
     try {
       const track = stream.getVideoTracks()[0]
-      const capabilities = track.getCapabilities() as ExtendedMediaTrackCapabilities;
-
-      if (capabilities.torch) {
-        await track.applyConstraints({
-          advanced: [{ torch: !isFlashOn } as any],
-        })
-        setIsFlashOn(!isFlashOn)
+      if (!track) {
+        throw new Error('No video track available')
       }
+
+      const capabilities = track.getCapabilities() as ExtendedMediaTrackCapabilities
+
+      if (!capabilities.torch) {
+        throw new Error('Flash is not supported on this device')
+      }
+
+      await track.applyConstraints({
+        advanced: [{ torch: !isFlashOn } as any],
+      })
+      setIsFlashOn(!isFlashOn)
     } catch (error) {
-      console.error("Flash not supported:", error)
+      console.error('Flash error:', error)
+      // Show toast or handle error appropriately
     }
   }, [stream, isFlashOn, setIsFlashOn])
 
-  const switchCamera = useCallback(() => {
-    setFacingMode(facingMode === "user" ? "environment" : "user")
-  }, [facingMode, setFacingMode])
+  const switchCamera = useCallback(async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const videoDevices = devices.filter(device => device.kind === 'videoinput')
+
+      if (videoDevices.length <= 1) {
+        throw new Error('No alternative camera available')
+      }
+
+      setFacingMode(facingMode === 'user' ? 'environment' : 'user')
+    } catch (error) {
+      console.error('Camera switch error:', error)
+      setCameraError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to switch camera'
+      )
+    }
+  }, [facingMode, setFacingMode, setCameraError])
 
   useEffect(() => {
     if (facingMode && hasPermission !== false) {

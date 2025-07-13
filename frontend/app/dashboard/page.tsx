@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { Header } from "@/components/Header"
 import { QuickActions } from "@/components/QuickActions"
-import { StatsGrid } from "@/components/StatsGrid"
 import { RecentIdentifications } from "@/components/RecentIdentifications"
 import { Sidebar } from "@/components/Sidebar"
 import { useRouter } from "next/navigation"
@@ -71,7 +70,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-      <Header userData={userData} onLogout={handleLogout} isLoading={isLoading} variant="dashboard" />
+      <Header userData={userData} onLogout={handleLogout} isLoading={isLoading} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
@@ -87,7 +86,6 @@ export default function DashboardPage() {
         </div>
 
         <QuickActions />
-        <StatsGrid />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Identifications */}

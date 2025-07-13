@@ -3,4 +3,12 @@ venv/
 __pycache__/ 
 *.pyc 
 .env 
-backend/ai_model/images/
+# Ignore temporary cache files but keep structure
+# image_cache/*.jpg
+# image_cache/*.jpeg
+# image_cache/*.png
+
+# Ignore intermediate checkpoints but keep best model
+# training_artifacts/plant_classifier_epoch_*.pth
+# training_artifacts/*.png
+# !training_artifacts/best_plant_classifier.pth

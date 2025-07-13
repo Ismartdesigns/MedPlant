@@ -11,8 +11,6 @@ interface NigerianPlantFiltersProps {
   onSearchChange: (query: string) => void
   selectedCategory: string
   onCategoryChange: (category: string) => void
-  selectedDifficulty: string
-  onDifficultyChange: (difficulty: string) => void
   sortBy: string
   onSortChange: (sort: string) => void
   viewMode: "grid" | "list"
@@ -21,17 +19,10 @@ interface NigerianPlantFiltersProps {
   categories: string[]
 }
 
-const difficulties = [
-  { value: "all", label: "All Levels" },
-  { value: "Easy", label: "Easy" },
-  { value: "Medium", label: "Medium" },
-  { value: "Hard", label: "Hard" },
-]
-
 const sortOptions = [
+  { value: "date", label: "Most Recent" },
   { value: "name", label: "Name (A-Z)" },
-  { value: "popularity", label: "Popularity" },
-  { value: "difficulty", label: "Difficulty" },
+  { value: "confidence", label: "Confidence Score" },
 ]
 
 export function NigerianPlantFilters({
@@ -39,8 +30,6 @@ export function NigerianPlantFilters({
   onSearchChange,
   selectedCategory,
   onCategoryChange,
-  selectedDifficulty,
-  onDifficultyChange,
   sortBy,
   onSortChange,
   viewMode,
@@ -48,11 +37,11 @@ export function NigerianPlantFilters({
   totalResults,
   categories,
 }: NigerianPlantFiltersProps) {
-  const activeFiltersCount = [selectedCategory !== "all", selectedDifficulty !== "all"].filter(Boolean).length
+  const activeFiltersCount = [selectedCategory !== "all"].filter(Boolean).length
 
   const categoryOptions = categories.map((category) => ({
     value: category,
-    label: category === "all" ? "All Categories" : category.charAt(0).toUpperCase() + category.slice(1),
+    label: category === "all" ? "All Identifications" : category.charAt(0).toUpperCase() + category.slice(1),
   }))
 
   return (
@@ -62,7 +51,7 @@ export function NigerianPlantFilters({
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
-            placeholder="Search plants by name, local names, or benefits..."
+            placeholder="Search by plant name, scientific name, or uses..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 border-emerald-200 focus:border-emerald-500 focus:ring-emerald-500"
@@ -116,19 +105,6 @@ export function NigerianPlantFilters({
           </SelectContent>
         </Select>
 
-        <Select value={selectedDifficulty} onValueChange={onDifficultyChange}>
-          <SelectTrigger className="w-40 border-emerald-200 focus:border-emerald-500">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {difficulties.map((difficulty) => (
-              <SelectItem key={difficulty.value} value={difficulty.value}>
-                {difficulty.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
         <Select value={sortBy} onValueChange={onSortChange}>
           <SelectTrigger className="w-40 border-emerald-200 focus:border-emerald-500">
             <SelectValue />
@@ -146,7 +122,7 @@ export function NigerianPlantFilters({
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing {totalResults} Nigerian medicinal plant{totalResults !== 1 ? "s" : ""}
+          Showing {totalResults} plant identification{totalResults !== 1 ? "s" : ""}
           {searchQuery && ` for "${searchQuery}"`}
         </p>
       </div>

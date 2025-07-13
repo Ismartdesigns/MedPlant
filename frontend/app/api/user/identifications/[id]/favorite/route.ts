@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-export async function GET() {
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get('session')?.value
@@ -13,25 +16,25 @@ export async function GET() {
       )
     }
 
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/user/progress`, {
-      method: 'GET',
+    const FASTAPI_URL = process.env.FASTAPI_URL || 'http://localhost:8000'
+    const response = await fetch(`${FASTAPI_URL}/api/user/identifications/${params.id}/favorite`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     })
 
-    const data = await response.json()
-
     if (!response.ok) {
-      return NextResponse.json(data, { status: response.status })
+      throw new Error('Failed to update favorite status')
     }
 
+    const data = await response.json()
     return NextResponse.json(data)
   } catch (error) {
-    console.error('User progress error:', error)
+    console.error('Error updating favorite status:', error)
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'Failed to update favorite status' },
       { status: 500 }
     )
   }

@@ -13,7 +13,7 @@ export async function GET() {
       )
     }
 
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/plants`, {
+    const response = await fetch(`${process.env.FASTAPI_URL}/api/user/identifications`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

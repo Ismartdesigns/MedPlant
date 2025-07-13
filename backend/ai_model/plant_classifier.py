@@ -1,120 +1,82 @@
+import torch
+import torch.nn as nn
+import torchvision.transforms as transforms
+import torchvision
 import os
 from PIL import Image
-import torch
-import torchvision.transforms as transforms
-from typing import Dict, Any
-import torchvision.models as models
-from torch import nn
-from sqlmodel import Session, select
-from sqlalchemy import func
-from backend.database import SessionLocal
-from backend.models import MedicinalPlant
-from torchvision.models import EfficientNet_B4_Weights  # Import the weights enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PlantClassifier(nn.Module):
-    def forward(self, x):
-        return self.model(x)
-    def __init__(self, model_path: str = None, num_classes: int = None):
+    def __init__(self, num_classes, label_to_idx=None, model_path=None):
         super(PlantClassifier, self).__init__()
+        self.num_classes = num_classes
+        self.label_to_idx = label_to_idx or {}
+        self.idx_to_label = {idx: name for name, idx in self.label_to_idx.items()} if self.label_to_idx else {}
+        
+        # Use ResNet18 as a base
+        self.base_model = torchvision.models.resnet18(pretrained=False)
+        num_features = self.base_model.fc.in_features
+        self.base_model.fc = nn.Linear(num_features, num_classes)
+        
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.to(self.device)
         
-        # Load pre-trained EfficientNet-B4 with updated weights parameter
-        self.model = models.efficientnet_b4(weights=EfficientNet_B4_Weights.DEFAULT)
-        
-        # If num_classes is not provided, get it from database
-        if num_classes is None:
-            with SessionLocal() as db:
-                num_classes = db.exec(select(func.count()).select_from(MedicinalPlant)).one()
-                num_classes = int(num_classes)
-        
-        # Modify the final layer for your number of plant classes
-        self.model.classifier[1] = nn.Linear(self.model.classifier[1].in_features, num_classes)
-        
-        # Load fine-tuned weights if they exist
-        if model_path and os.path.exists(model_path):
-            self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-        
-        self.model = self.model.to(self.device)
-        self.model.eval()
-        
-        # Define image transformations
+        # Preprocessing (matched to training 380x380)
         self.transform = transforms.Compose([
+            transforms.Resize((380, 380)),
             transforms.ToTensor(),
-            transforms.Resize((380, 380)),  # EfficientNet-B4 input size
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], 
-                                 std=[0.229, 0.224, 0.225])
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
-        
-        # Create class mapping
-        self.idx_to_plant = self._create_class_mapping()
-    
-    def _create_class_mapping(self) -> Dict[int, Dict[str, Any]]:
-        """Create mapping from class index to plant information."""
-        with SessionLocal() as db:
-            plants = db.exec(select(MedicinalPlant)).all()
-            return {idx: {
-                'plant_name': plant.plant_name,
-                'scientific_name': plant.scientific_name,
-                'local_names': plant.local_names,
-                'parts_used': plant.parts_used,
-                'uses': plant.uses,
-                'benefits': plant.benefits,
-                'side_effects': plant.side_effects
-            } for idx, plant in enumerate(plants)}
-    
-    def preprocess_image(self, image_path: str) -> torch.Tensor:
-        """Preprocess the image for model input."""
-        img = Image.open(image_path)
-        img = img.convert('RGB')
-        img_tensor = self.transform(img)
-        return img_tensor.unsqueeze(0)
-    
-    def predict(self, image_path: str) -> Dict[str, Any]:
-        """Make prediction on the input image."""
-        img_tensor = self.preprocess_image(image_path)
-        img_tensor = img_tensor.to(self.device)
-        
-        with torch.no_grad():
-            outputs = self.model(img_tensor)
-            probabilities = torch.nn.functional.softmax(outputs, dim=1)
-            confidence, predicted = torch.max(probabilities, 1)
-            
-            # Get plant information from the predicted class
-            plant_info = self.idx_to_plant[predicted.item()]
-            
-            return {
-                "plant_name": plant_info['plant_name'],
-                "scientific_name": plant_info['scientific_name'],
-                "confidence": confidence.item(),
-                "local_names": plant_info['local_names'],
-                "parts_used": plant_info['parts_used'],
-                "uses": plant_info['uses'],
-                "benefits": plant_info['benefits'],
-                "side_effects": plant_info['side_effects']
-            }
-    
-    def get_plant_details(self, plant_name: str) -> Dict[str, Any]:
-        """Get detailed information about a plant from the database."""
-        with SessionLocal() as db:
-            plant = db.exec(
-                select(MedicinalPlant).where(MedicinalPlant.plant_name == plant_name)
-            ).first()
-            
-            if not plant:
-                return {
-                    "description": "Plant not found in database.",
-                    "care_instructions": "No care instructions available.",
-                    "growing_conditions": "No growing conditions available.",
-                    "common_uses": "No common uses available."
-                }
-            
-            return {
-                "description": f"A medicinal plant known as {plant.plant_name} ({plant.scientific_name})",
-                "care_instructions": "Consult with a healthcare professional before use.",
-                "growing_conditions": "Native to various regions, consult local gardening experts for specific growing conditions.",
-                "common_uses": plant.uses,
-                "benefits": plant.benefits,
-                "side_effects": plant.side_effects,
-                "parts_used": plant.parts_used,
-                "local_names": plant.local_names
-            }
+
+        # Load checkpoint if provided
+        if model_path and os.path.exists(model_path):
+            try:
+                checkpoint = torch.load(model_path, map_location=self.device)
+                self.load_state_dict(checkpoint['model_state_dict'])
+                if 'label_to_idx' in checkpoint:
+                    self.label_to_idx = checkpoint['label_to_idx']
+                    self.idx_to_label = {idx: name for name, idx in self.label_to_idx.items()}
+                    logger.info(f"Loaded label_to_idx from checkpoint with {len(self.label_to_idx)} classes")
+                logger.info(f"Loaded model from {model_path}")
+            except Exception as e:
+                logger.error(f"Failed to load checkpoint from {model_path}: {str(e)}")
+
+    def preprocess_image(self, image_path):
+        try:
+            with Image.open(image_path) as img:
+                img = img.convert('RGB')
+                if img.size[0] <= 0 or img.size[1] <= 0:
+                    raise ValueError("Invalid image dimensions")
+                return self.transform(img)
+        except Exception as e:
+            logger.error(f"Image preprocessing failed for {image_path}: {str(e)}")
+            return None
+
+    def forward(self, x):
+        return self.base_model(x)
+
+    def predict(self, image_path):
+        self.eval()
+        try:
+            image = self.preprocess_image(image_path)
+            if image is None:
+                raise ValueError("Failed to preprocess image")
+            image = image.to(self.device)
+            with torch.no_grad():
+                output = self.forward(image.unsqueeze(0))
+                if output.shape[1] != self.num_classes:
+                    raise ValueError(f"Output shape {output.shape} does not match expected {self.num_classes} classes")
+                _, predicted = torch.max(output, 1)
+                confidence = torch.softmax(output, dim=1)[0, predicted.item()].item()
+                predicted_idx = predicted.item()
+                logger.info(f"Predicted index: {predicted_idx}, Output shape: {output.shape}, Num classes: {self.num_classes}")
+                if self.idx_to_label and 0 <= predicted_idx < len(self.idx_to_label):
+                    scientific_name = self.idx_to_label.get(predicted_idx, f"unknown_class_{predicted_idx}")
+                    logger.info(f"Predicted: {scientific_name}, index: {predicted_idx}, confidence: {confidence}")
+                    return {"predicted_idx": predicted_idx, "confidence": confidence, "scientific_name": scientific_name}
+                return {"predicted_idx": predicted_idx, "confidence": confidence}
+        except Exception as e:
+            logger.error(f"Prediction error for {image_path}: {str(e)}")
+            return {"predicted_idx": -1, "confidence": 0.0, "scientific_name": "unknown"}

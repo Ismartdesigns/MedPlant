@@ -51,7 +51,13 @@ class PlantIdentification(SQLModel, table=True):
     plant_name: str
     scientific_name: str
     confidence_score: float
-    image_path: str
+    image_url: str  # Cloudinary secure URL
+    local_names: Optional[str] = None
+    parts_used: Optional[str] = None
+    uses: Optional[str] = None
+    benefits: Optional[str] = None
+    side_effects: Optional[str] = None
+    is_favorite: bool = Field(default=False)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     user: User = Relationship(back_populates="identifications")

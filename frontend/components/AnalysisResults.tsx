@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, Camera, Save } from "lucide-react"
+import { Check, Camera, Save, Leaf, AlertTriangle } from "lucide-react"
 import { useState } from "react"
 
 interface AnalysisResult {
@@ -10,6 +10,9 @@ interface AnalysisResult {
   confidence: number
   description: string
   careInstructions: string[]
+  medicinalUses?: string[]
+  benefits?: string[]
+  sideEffects?: string[]
 }
 
 interface AnalysisResultsProps {
@@ -26,6 +29,7 @@ export function AnalysisResults({
   onSave
 }: AnalysisResultsProps) {
   const [isSaving, setIsSaving] = useState(false)
+  const [activeTab, setActiveTab] = useState<'general' | 'medicinal'>('general')
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -67,21 +71,87 @@ export function AnalysisResults({
               <p className="text-lg text-emerald-600">{analysisResult.commonName}</p>
             </div>
 
-            <p className="text-gray-600">{analysisResult.description}</p>
-
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Care Instructions:</h3>
-              <ul className="space-y-1">
-                {analysisResult.careInstructions.map((instruction, index) => (
-                  <li key={index} className="flex items-center text-sm text-gray-600">
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 flex-shrink-0"></div>
-                    {instruction}
-                  </li>
-                ))}
-              </ul>
+            <div className="flex space-x-4 border-b">
+              <button
+                className={`py-2 px-4 ${activeTab === 'general' ? 'border-b-2 border-emerald-600 text-emerald-600' : 'text-gray-500'}`}
+                onClick={() => setActiveTab('general')}
+              >
+                General Info
+              </button>
+              <button
+                className={`py-2 px-4 ${activeTab === 'medicinal' ? 'border-b-2 border-emerald-600 text-emerald-600' : 'text-gray-500'}`}
+                onClick={() => setActiveTab('medicinal')}
+              >
+                Medicinal Uses
+              </button>
             </div>
 
-            <div className="flex space-x-3">
+            {activeTab === 'general' ? (
+              <>
+                <p className="text-gray-600">{analysisResult.description}</p>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Care Instructions:</h3>
+                  <ul className="space-y-1">
+                    {analysisResult.careInstructions.map((instruction, index) => (
+                      <li key={index} className="flex items-center text-sm text-gray-600">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 flex-shrink-0"></div>
+                        {instruction}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                {analysisResult.medicinalUses && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
+                      <Leaf className="w-4 h-4 mr-2 text-emerald-600" />
+                      Medicinal Uses
+                    </h3>
+                    <ul className="space-y-1">
+                      {analysisResult.medicinalUses.map((use, index) => (
+                        <li key={index} className="text-sm text-gray-600 ml-6">
+                          • {use}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {analysisResult.benefits && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Benefits:</h3>
+                    <ul className="space-y-1">
+                      {analysisResult.benefits.map((benefit, index) => (
+                        <li key={index} className="text-sm text-gray-600 ml-6">
+                          • {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {analysisResult.sideEffects && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
+                      <AlertTriangle className="w-4 h-4 mr-2 text-amber-500" />
+                      Side Effects
+                    </h3>
+                    <ul className="space-y-1">
+                      {analysisResult.sideEffects.map((effect, index) => (
+                        <li key={index} className="text-sm text-gray-600 ml-6">
+                          • {effect}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex space-x-3 pt-4">
               <Button onClick={onRetake} variant="outline" className="flex-1">
                 <Camera className="w-4 h-4 mr-2" />
                 New Photo

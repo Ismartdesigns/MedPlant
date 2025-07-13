@@ -45,7 +45,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section with Advanced CSS 3D */}
+      {/* Hero Section with Advanced CSS */}
       <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -84,27 +84,38 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Advanced 3D Plant Scene */}
+            {/* Hero Image with Modern Effects */}
             <div className="relative">
-              <div className="w-full h-96 rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-emerald-100 to-teal-100">
-                <Canvas camera={{ position: [0, 0, 2.5] }}>
-                  <ambientLight intensity={0.7} />
-                  <Stage environment="city" intensity={0.6}>
-                    <PlantModel />
-                  </Stage>
-                  <OrbitControls enableZoom={false} autoRotate />
-                </Canvas>
-              </div>
-
-              {/* Floating UI Elements */}
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg transform hover:scale-105 transition-transform">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-gray-700">AI Scanning</span>
+              <div className="w-full h-96 rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-emerald-100 to-teal-100 relative">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-20">
+                  <div className="absolute inset-0 bg-grid-emerald-100 animate-grid-fade"></div>
                 </div>
-              </div>
-              <div className="absolute bottom-4 right-4 bg-emerald-600 text-white rounded-xl p-3 shadow-lg transform hover:scale-105 transition-transform">
-                <div className="text-sm font-medium">99% Match</div>
+                
+                {/* Main Image */}
+                <div className="relative h-full w-full">
+                  <img
+                    src="/placeholder.jpg"
+                    alt="Medicinal Plant"
+                    style={{ width: '100%', height: '100%' }}
+                    className="object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
+
+                {/* Floating Elements */}
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg transform hover:scale-105 transition-transform">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-700">AI Scanning</span>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 right-4 bg-emerald-600 text-white rounded-xl p-3 shadow-lg transform hover:scale-105 transition-transform">
+                  <div className="text-sm font-medium">99% Match</div>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-emerald-200 rounded-full blur-2xl opacity-60 animate-pulse"></div>
+                <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-teal-200 rounded-full blur-3xl opacity-60 animate-pulse delay-300"></div>
               </div>
             </div>
           </div>

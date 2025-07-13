@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
     // Get the form data from the request
     const formData = await request.formData()
     
-    // Forward the request to FastAPI with Authorization header
+    // Forward the request to FastAPI with Bearer token authentication
     const response = await fetch(`${process.env.FASTAPI_URL}/api/identify`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`
       },
-      body: formData,
+      body: formData
     })
 
     const data = await response.json()
