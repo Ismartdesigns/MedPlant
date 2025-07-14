@@ -24,6 +24,10 @@ export function PlantOfTheDay() {
         const response = await fetch(API_ENDPOINTS.user.plantOfTheDay, {
           method: 'GET',
           credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          }
         })
         if (!response.ok) {
           const data = await response.json()
