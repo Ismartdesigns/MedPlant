@@ -24,12 +24,17 @@ export async function POST(request: Request) {
     }
 
 
+    // Convert email/password to username/password format for OAuth2
+    const formData = new URLSearchParams()
+    formData.append('username', result.data.email)
+    formData.append('password', result.data.password)
+
     const response = await fetch(API_ENDPOINTS.auth.login, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify(result.data),
+      body: formData,
     })
 
     if (response.status === 422) {
