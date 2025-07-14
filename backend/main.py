@@ -46,10 +46,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 app = FastAPI(title="MedPlant API")
 
 # Configure CORS
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://*.onrender.com", "https://*.vercel.app"],
+    allow_origin_regex=r"(http://localhost:3000|https://.*\.vercel\.app|https://.*\.onrender\.com)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

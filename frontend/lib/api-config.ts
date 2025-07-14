@@ -1,7 +1,7 @@
 // API configuration and URL management
 
 // Get the API URL from environment variable with fallback
-export const API_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || ''
+export const API_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || "https://medplant-yjp2.onrender.com"
 
 if (!API_BASE_URL && process.env.NODE_ENV === 'production') {
   console.error('NEXT_PUBLIC_FASTAPI_URL environment variable is not set in production')
