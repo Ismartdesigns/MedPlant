@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { signupSchema } from '@/lib/validations/auth'
+import { API_ENDPOINTS, handleApiResponse } from '@/lib/api-config'
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     const { firstName, lastName, email, password, confirmPassword, agreeToTerms } = result.data
 
     // Call backend API with correctly ordered and formatted keys
-    const response = await fetch('http://localhost:8000/api/auth/signup', {
+    const response = await fetch(API_ENDPOINTS.auth.signup, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,14 +37,7 @@ export async function POST(request: Request) {
       }),
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { message: data.message || 'Signup failed' },
-        { status: response.status }
-      )
-    }
+    const data = await handleApiResponse(response)
 
     // Set secure HTTP-only cookie with JWT token
     const cookieStore = await cookies()
