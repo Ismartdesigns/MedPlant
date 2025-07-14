@@ -60,51 +60,55 @@ app.add_middleware(
 def on_startup():
     create_db_and_tables()
 
-# Model initialization
+# Global variables for lazy loading
+model = None
+inaturalist_data = None
+default_label_to_idx = None
+idx_to_label = None
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-try:
-    # Load inaturalist data for class labels
-    with open(INATURALIST_DATA_PATH, 'r') as f:
-        inaturalist_data = json.load(f)
-    scientific_names = {entry["scientific_name"].lower().strip() for entry in inaturalist_data}
-    num_classes = len(scientific_names)
-    default_label_to_idx = {name: idx for idx, name in enumerate(sorted(scientific_names))}
-    idx_to_label = {idx: name for name, idx in default_label_to_idx.items()}
 
-    # Initialize model with label_to_idx
-    model = PlantClassifier(num_classes=num_classes, label_to_idx=default_label_to_idx)
-    
-    # Load trained model weights with strict loading and mapping
-    if os.path.exists(MODEL_PATH):
-        checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
-        model_state_dict = checkpoint.get('model_state_dict', {})
-        model.load_state_dict(model_state_dict, strict=False)  # Allow missing keys
-        if 'label_to_idx' in checkpoint:
-            model.label_to_idx = checkpoint['label_to_idx']
-            idx_to_label = {idx: name for name, idx in model.label_to_idx.items()}
-            logger.info(f"Loaded label_to_idx from checkpoint with {len(model.label_to_idx)} classes")
-        else:
-            logger.warning("No label_to_idx in checkpoint, using inaturalist data")
-        model.to(device)
-        logger.info(f"Loaded model from {MODEL_PATH} with {num_classes} classes")
-    else:
-        raise FileNotFoundError(f"Model or inaturalist data file not found at {MODEL_PATH}")
-except FileNotFoundError as e:
-    raise HTTPException(status_code=500, detail=f"Model or inaturalist data file not found: {str(e)}")
-except Exception as e:
-    logger.error(f"Model initialization error: {str(e)}")
-    raise HTTPException(status_code=500, detail=f"Error initializing model: {str(e)}")
+def load_model_once():
+    global model, inaturalist_data, default_label_to_idx, idx_to_label
+    if model is None:
+        try:
+            # Load inaturalist data for class labels
+            with open(INATURALIST_DATA_PATH, 'r') as f:
+                inaturalist_data = json.load(f)
+            scientific_names = {entry["scientific_name"].lower().strip() for entry in inaturalist_data}
+            num_classes = len(scientific_names)
+            default_label_to_idx = {name: idx for idx, name in enumerate(sorted(scientific_names))}
+            idx_to_label = {idx: name for name, idx in default_label_to_idx.items()}
 
-# Load medicinal data if available
-medicinal_data = {}
-try:
-    with open(MEDICINAL_DATA_PATH, 'r') as f:
-        medicinal_data = {item["scientific_name"].lower().strip(): item for item in json.load(f)}
-    logger.info(f"Loaded medicinal data for {len(medicinal_data)} species")
-except FileNotFoundError:
-    logger.warning(f"Medicinal data file not found at {MEDICINAL_DATA_PATH}, using basic data only")
-except Exception as e:
-    logger.error(f"Error loading medicinal data: {str(e)}")
+            # Initialize model with label_to_idx
+            model = PlantClassifier(num_classes=num_classes, label_to_idx=default_label_to_idx)
+            
+            # Load trained model weights
+            if os.path.exists(MODEL_PATH):
+                checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
+                model_state_dict = checkpoint.get('model_state_dict', {})
+                model.load_state_dict(model_state_dict, strict=False)
+                if 'label_to_idx' in checkpoint:
+                    model.label_to_idx = checkpoint['label_to_idx']
+                    idx_to_label = {idx: name for name, idx in model.label_to_idx.items()}
+                    logger.info(f"Loaded label_to_idx from checkpoint with {len(model.label_to_idx)} classes")
+                model.to(device)
+                logger.info(f"Loaded model from {MODEL_PATH} with {num_classes} classes")
+            else:
+                raise FileNotFoundError(f"Model not found at {MODEL_PATH}")
+        except Exception as e:
+            logger.error(f"Model initialization error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error initializing model: {str(e)}")
+
+def get_medicinal_data():
+    try:
+        with open(MEDICINAL_DATA_PATH, 'r') as f:
+            return {item["scientific_name"].lower().strip(): item for item in json.load(f)}
+    except FileNotFoundError:
+        logger.warning(f"Medicinal data file not found at {MEDICINAL_DATA_PATH}")
+        return {}
+    except Exception as e:
+        logger.error(f"Error loading medicinal data: {str(e)}")
+        return {}
 
 # Security setup
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -150,6 +154,9 @@ async def identify_plant(
     current_user: User = Depends(get_current_user)
 ):
     try:
+        # Load model if not loaded
+        load_model_once()
+        
         # Save file temporarily
         contents = await file.read()
         os.makedirs("temp", exist_ok=True)
@@ -177,8 +184,8 @@ async def identify_plant(
         scientific_name = idx_to_label.get(predicted_idx, f"unknown_class_{predicted_idx}")
         plant_name = next((entry["common_name"] for entry in inaturalist_data if entry["scientific_name"].lower().strip() == scientific_name), scientific_name.split()[-1])
         
-        # Enrich with medicinal data if available
-        medicinal_info = medicinal_data.get(scientific_name, {
+        # Get medicinal data
+        medicinal_info = get_medicinal_data().get(scientific_name, {
             "local_names": [],
             "uses": [],
             "benefits": [],
