@@ -19,6 +19,7 @@ interface CameraConstraints {
     width: { ideal: number }
     height: { ideal: number }
     facingMode: "user" | "environment"
+    frameRate: { ideal: number }
   }
 }
 
@@ -73,12 +74,13 @@ export function CameraSection({
         throw new Error('No camera devices found')
       }
 
-      // Set optimal constraints
+      // Set optimal constraints with more stable settings
       const constraints: CameraConstraints = {
         video: {
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
           facingMode: facingMode,
+          frameRate: { ideal: 30 }
         },
       }
 
@@ -95,10 +97,25 @@ export function CameraSection({
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream
         
-        // Handle video loading errors
+        // Handle video loading errors and interruptions
         videoRef.current.onerror = () => {
           setCameraError('Failed to display camera stream')
           setHasPermission(false)
+        }
+
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(error => {
+            console.error('Error playing video:', error)
+            setCameraError('Failed to start video playback')
+          })
+        }
+
+        // Monitor stream status
+        mediaStream.getVideoTracks()[0].onended = () => {
+          console.log('Video stream ended unexpectedly')
+          setCameraError('Camera stream was interrupted')
+          setStream(null)
+          startCamera() // Attempt to restart the camera
         }
       }
     } catch (error) {
