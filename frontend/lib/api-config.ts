@@ -44,17 +44,42 @@ export const getAuthHeaders = (token?: string) => {
   return headers
 }
 
+// Custom API Error type
+export class ApiError extends Error {
+  status: number;
+  statusText: string;
+  details: any;
+
+  constructor(message: string, status: number, statusText: string, details?: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.statusText = statusText;
+    this.details = details;
+  }
+}
+
 // Helper function to handle API responses
 export const handleApiResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => null)
-    const error = new Error(errorData?.message || 'API request failed')
-    error.name = 'ApiError'
-    // Add additional error details
-    ;(error as any).status = response.status
-    ;(error as any).statusText = response.statusText
-    ;(error as any).details = errorData
-    throw error
+    const message = errorData?.message || errorData?.detail || 'API request failed'
+    
+    if (response.status === 422) {
+      throw new ApiError(
+        'Validation failed',
+        response.status,
+        response.statusText,
+        errorData?.detail || errorData?.errors || errorData
+      )
+    }
+    
+    throw new ApiError(
+      message,
+      response.status,
+      response.statusText,
+      errorData
+    )
   }
   return response.json()
 }

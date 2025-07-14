@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { loginSchema } from '@/lib/validations/auth'
-import { API_ENDPOINTS, handleApiResponse } from '@/lib/api-config'
+import { API_ENDPOINTS, handleApiResponse, ApiError } from '@/lib/api-config'
 
 export async function POST(request: Request) {
   try {
@@ -10,9 +10,16 @@ export async function POST(request: Request) {
     // Validate input
     const result = loginSchema.safeParse(body)
     if (!result.success) {
+      const errors = result.error.errors.map(err => ({
+        field: err.path.join('.'),
+        message: err.message
+      }))
       return NextResponse.json(
-        { message: 'Invalid input', errors: result.error.errors },
-        { status: 400 }
+        { 
+          message: 'Validation failed',
+          errors: errors
+        },
+        { status: 422 }
       )
     }
 
@@ -24,6 +31,17 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify(result.data),
     })
+
+    if (response.status === 422) {
+      const errorData = await response.json()
+      return NextResponse.json(
+        { 
+          message: 'Backend validation failed',
+          errors: errorData.detail || errorData.errors || errorData
+        },
+        { status: 422 }
+      )
+    }
 
     const data = await handleApiResponse(response)
     
@@ -41,21 +59,27 @@ export async function POST(request: Request) {
     console.error('Login error:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       name: error instanceof Error ? error.name : 'UnknownError',
-      status: (error as any)?.status || 500,
-      details: (error as any)?.details || {},
+      status: error instanceof ApiError ? error.status : 500,
+      details: error instanceof ApiError ? error.details : {},
       stack: error instanceof Error ? error.stack : undefined
     })
 
-    // Return appropriate error response
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        { 
+          message: error.message,
+          errors: error.details
+        },
+        { 
+          status: error.status,
+          statusText: error.statusText
+        }
+      )
+    }
+
     return NextResponse.json(
-      { 
-        message: error instanceof Error ? error.message : 'Internal server error',
-        details: (error as any)?.details || {}
-      },
-      { 
-        status: (error as any)?.status || 500,
-        statusText: (error as any)?.statusText || 'Internal Server Error'
-      }
+      { message: 'Internal server error' },
+      { status: 500 }
     )
   }
 }
