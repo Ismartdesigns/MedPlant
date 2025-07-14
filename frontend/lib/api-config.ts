@@ -48,7 +48,13 @@ export const getAuthHeaders = (token?: string) => {
 export const handleApiResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => null)
-    throw new Error(errorData?.message || 'API request failed')
+    const error = new Error(errorData?.message || 'API request failed')
+    error.name = 'ApiError'
+    // Add additional error details
+    ;(error as any).status = response.status
+    ;(error as any).statusText = response.statusText
+    ;(error as any).details = errorData
+    throw error
   }
   return response.json()
 }

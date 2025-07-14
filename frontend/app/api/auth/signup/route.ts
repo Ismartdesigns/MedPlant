@@ -53,10 +53,24 @@ export async function POST(request: Request) {
       user: data.user
     })
   } catch (error) {
-    console.error('Signup error:', error)
+    console.error('Signup error:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      name: error instanceof Error ? error.name : 'UnknownError',
+      status: (error as any)?.status || 500,
+      details: (error as any)?.details || {},
+      stack: error instanceof Error ? error.stack : undefined
+    })
+
+    // Return appropriate error response
     return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
+      { 
+        message: error instanceof Error ? error.message : 'Internal server error',
+        details: (error as any)?.details || {}
+      },
+      { 
+        status: (error as any)?.status || 500,
+        statusText: (error as any)?.statusText || 'Internal Server Error'
+      }
     )
   }
 }
