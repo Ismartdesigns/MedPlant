@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
     activityFeed: `${API_BASE_URL}/api/user/activity_feed`,
     identifications: `${API_BASE_URL}/api/user/identifications`,
     favoriteIdentification: (id: string) => `${API_BASE_URL}/api/user/identifications/${id}/favorite`,
+    plantOfTheDay: `${API_BASE_URL}/api/user/plant_of_the_day`,
   },
   // Plant endpoints
   plants: {

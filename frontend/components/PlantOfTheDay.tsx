@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Leaf, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { API_ENDPOINTS } from "@/lib/api-config"
 
 interface PlantOfTheDay {
   name: string
@@ -20,7 +21,7 @@ export function PlantOfTheDay() {
   useEffect(() => {
     const fetchPlantOfTheDay = async () => {
       try {
-        const response = await fetch('/api/user/plant_of_the_day', {
+        const response = await fetch(API_ENDPOINTS.user.plantOfTheDay, {
           method: 'GET',
           credentials: 'include',
         })
