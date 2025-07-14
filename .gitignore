@@ -12,3 +12,4 @@ __pycache__/
 # training_artifacts/plant_classifier_epoch_*.pth
 # training_artifacts/*.png
 # !training_artifacts/best_plant_classifier.pth
+.vercel
