@@ -28,7 +28,7 @@ export const API_ENDPOINTS = {
   plants: {
     list: `${API_BASE_URL}/api/plants`,
     details: (scientificName: string) => `${API_BASE_URL}/api/plants/${encodeURIComponent(scientificName)}`,
-    identify: `${API_BASE_URL}/api/plants/identify`,
+    identify: `${API_BASE_URL}/api/identify`,
   },
 }
 
