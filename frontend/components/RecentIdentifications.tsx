@@ -68,22 +68,23 @@ export function RecentIdentifications() {
         method: 'DELETE',
         credentials: 'include',
       })
-      const data = await response.json()
       
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete identification')
+      if (response.ok) {
+        setIdentifications(prev => prev.filter(item => item.id !== id))
+        toast({
+          title: "Success",
+          description: "Plant identification deleted successfully",
+        })
+        return
       }
-      
-      setIdentifications(prev => prev.filter(item => item.id !== id))
-      toast({
-        title: "Success",
-        description: data.message || "Plant identification deleted successfully",
-      })
+
+      const data = await response.json()
+      throw new Error(data.message || 'Failed to delete identification')
     } catch (error) {
       console.error('Delete error:', error)
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to delete plant identification",
+        description: error instanceof Error ? error.message : "Failed to delete identification",
         variant: "destructive",
       })
     }

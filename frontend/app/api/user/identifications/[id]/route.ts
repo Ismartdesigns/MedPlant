@@ -22,11 +22,17 @@ export async function DELETE(
       headers: getAuthHeaders(token),
     })
 
-    await handleApiResponse(response)
+    if (response.ok) {
+      return NextResponse.json(
+        { message: 'Identification deleted successfully' },
+        { status: 200 }
+      )
+    }
 
+    const errorData = await response.json()
     return NextResponse.json(
-      { message: 'Identification deleted successfully' },
-      { status: 200 }
+      { message: errorData.message || 'Failed to delete identification' },
+      { status: response.status }
     )
   } catch (error) {
     console.error('Delete identification error:', error)
