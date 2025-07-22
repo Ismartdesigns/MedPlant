@@ -1,583 +1,99 @@
 [
   {
     "scientific_name": "Aloe vera",
-    "local_names": ["True Aloe", "Medicinal Aloe"],
-    "uses": ["Topical application for skin conditions, burns, and wounds", "Oral consumption for digestive health"],
-    "benefits": ["Anti-inflammatory", "Antimicrobial", "Wound healing", "Skin moisturizing", "Digestive aid"],
-    "side_effects": ["Skin irritation", "Stomach cramps or diarrhea with oral use"]
+    "local_names": [
+      "True Aloe",
+      "Medicinal Aloe"
+    ],
+    "uses": [
+      "Topical application for skin conditions, burns, and wounds",
+      "Oral consumption for digestive health"
+    ],
+    "benefits": [
+      "Anti-inflammatory",
+      "Antimicrobial",
+      "Wound healing",
+      "Skin moisturizing",
+      "Digestive aid"
+    ],
+    "side_effects": [
+      "Skin irritation",
+      "Stomach cramps or diarrhea with oral use"
+    ]
   },
   {
     "scientific_name": "Aloe vera chinensis",
-    "local_names": ["Chinese Aloe"],
-    "uses": ["Topical treatment for burns and skin irritation", "Potential digestive support"],
-    "benefits": ["Moisturizing", "Mild anti-inflammatory"],
-    "side_effects": ["Possible skin sensitivity", "Digestive discomfort if overused"]
-  },
-  {
-    "scientific_name": "Echinacea purpurea",
-    "local_names": ["Eastern Purple Coneflower"],
-    "uses": ["Immune system support", "Cold and flu prevention", "Wound healing"],
-    "benefits": ["Boosts immune system", "Reduces inflammation", "Fights infections"],
-    "side_effects": ["Allergic reactions", "Nausea", "Dizziness"]
-  },
-  {
-    "scientific_name": "Ginkgo biloba",
-    "local_names": ["Maidenhair Tree"],
-    "uses": ["Cognitive enhancement", "Circulation improvement", "Antioxidant"],
-    "benefits": ["Improves memory", "Enhances blood flow", "Reduces oxidative stress"],
-    "side_effects": ["Headache", "Dizziness", "Increased bleeding risk"]
-  },
-  {
-    "scientific_name": "Hypericum perforatum",
-    "local_names": ["St. John's Wort"],
-    "uses": ["Mild depression treatment", "Anxiety relief", "Sleep aid"],
-    "benefits": ["Mood improvement", "Reduces anxiety", "Promotes sleep"],
-    "side_effects": ["Photosensitivity", "Dry mouth", "Medication interactions"]
-  },
-  {
-    "scientific_name": "Panax ginseng",
-    "local_names": ["Korean Ginseng", "Asian Ginseng"],
-    "uses": ["Stress relief", "Cognitive function support", "Immune boost"],
-    "benefits": ["Enhances energy", "Improves focus", "Supports immunity"],
-    "side_effects": ["Insomnia", "Increased heart rate", "Interactions with medications"]
-  },
-  {
-    "scientific_name": "Panax pseudoginseng",
-    "local_names": ["Japanese Ginseng"],
-    "uses": ["Blood circulation support", "Anti-inflammatory"],
-    "benefits": ["May reduce swelling", "Supports cardiovascular health"],
-    "side_effects": ["Digestive upset", "Potential bleeding risk"]
-  },
-  {
-    "scientific_name": "Matricaria chamomilla",
-    "local_names": ["German Chamomile"],
-    "uses": ["Relaxation aid", "Digestive relief", "Skin soothing"],
-    "benefits": ["Calms nerves", "Reduces bloating", "Anti-inflammatory for skin"],
-    "side_effects": ["Allergic reactions", "Drowsiness"]
-  },
-  {
-    "scientific_name": "Valeriana officinalis",
-    "local_names": ["Common Valerian"],
-    "uses": ["Sleep aid", "Anxiety reduction"],
-    "benefits": ["Promotes sleep", "Reduces anxiety"],
-    "side_effects": ["Drowsiness", "Headache", "Rare liver issues"]
-  },
-  {
-    "scientific_name": "Valeriana excelsa sambucifolia",
-    "local_names": ["Sambucus Valerian"],
-    "uses": ["Sleep support", "Mild sedative"],
-    "benefits": ["Calms nerves", "Aids rest"],
-    "side_effects": ["Drowsiness", "Potential digestive discomfort"]
-  },
-  {
-    "scientific_name": "Mentha × piperita",
-    "local_names": ["Peppermint"],
-    "uses": ["Digestive aid", "Headache relief", "Nasal decongestant"],
-    "benefits": ["Relieves indigestion", "Clears sinuses", "Reduces tension"],
-    "side_effects": ["Heartburn", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Urtica dioica",
-    "local_names": ["Great Stinging Nettle"],
-    "uses": ["Allergy relief", "Joint pain treatment"],
-    "benefits": ["Reduces inflammation", "Supports urinary health"],
-    "side_effects": ["Skin irritation", "Stomach upset"]
-  },
-  {
-    "scientific_name": "Urtica gracilis",
-    "local_names": ["Slender Stinging Nettle"],
-    "uses": ["Joint pain relief", "Nutritional supplement"],
-    "benefits": ["Anti-inflammatory", "Rich in vitamins"],
-    "side_effects": ["Skin irritation", "Mild digestive issues"]
+    "local_names": [
+      "Chinese Aloe"
+    ],
+    "uses": [
+      "Topical treatment for burns and skin irritation",
+      "Potential digestive support"
+    ],
+    "benefits": [
+      "Moisturizing",
+      "Mild anti-inflammatory"
+    ],
+    "side_effects": [
+      "Possible skin sensitivity",
+      "Digestive discomfort if overused"
+    ]
   },
   {
     "scientific_name": "Zingiber officinale",
-    "local_names": ["Common Ginger", "Cooking Ginger"],
-    "uses": ["Digestive aid", "Anti-nausea", "Anti-inflammatory"],
-    "benefits": ["Reduces nausea", "Aids digestion", "Reduces inflammation"],
-    "side_effects": ["Heartburn", "Digestive discomfort in large amounts"]
-  },
-  {
-    "scientific_name": "Salvia rosmarinus",
-    "local_names": ["Rosemary"],
-    "uses": ["Memory enhancement", "Digestive support"],
-    "benefits": ["Improves circulation", "Antioxidant properties"],
-    "side_effects": ["Allergic reactions", "Seizures in high doses"]
-  },
-  {
-    "scientific_name": "Lavandula angustifolia",
-    "local_names": ["Common Lavender"],
-    "uses": ["Stress relief", "Sleep aid", "Skin care"],
-    "benefits": ["Calms nerves", "Promotes sleep", "Soothes skin"],
-    "side_effects": ["Drowsiness", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Salvia officinalis",
-    "local_names": ["Garden Sage"],
-    "uses": ["Cognitive support", "Anti-inflammatory"],
-    "benefits": ["Enhances memory", "Reduces inflammation"],
-    "side_effects": ["Dry mouth", "Seizures in excess"]
-  },
-  {
-    "scientific_name": "Salvia officinalis lavandulifolia",
-    "local_names": ["Spanish Common Sage"],
-    "uses": ["Memory aid", "Digestive support"],
-    "benefits": ["Improves focus", "Aids digestion"],
-    "side_effects": ["Dry mouth", "Potential toxicity in high doses"]
+    "local_names": [
+      "Common Ginger",
+      "Cooking Ginger"
+    ],
+    "uses": [
+      "Digestive aid",
+      "Anti-nausea",
+      "Anti-inflammatory"
+    ],
+    "benefits": [
+      "Reduces nausea",
+      "Aids digestion",
+      "Reduces inflammation"
+    ],
+    "side_effects": [
+      "Heartburn",
+      "Digestive discomfort in large amounts"
+    ]
   },
   {
     "scientific_name": "Thymus vulgaris",
-    "local_names": ["Common Thyme"],
-    "uses": ["Respiratory support", "Antiseptic"],
-    "benefits": ["Clears airways", "Fights infections"],
-    "side_effects": ["Allergic reactions", "Stomach irritation"]
-  },
-  {
-    "scientific_name": "Camellia sinensis",
-    "local_names": ["Tea"],
-    "uses": ["Antioxidant boost", "Mental alertness"],
-    "benefits": ["Reduces oxidative stress", "Enhances focus"],
-    "side_effects": ["Caffeine sensitivity", "Insomnia"]
-  },
-  {
-    "scientific_name": "Camellia sinensis assamica",
-    "local_names": ["Assam Tea"],
-    "uses": ["Antioxidant support", "Energy boost"],
-    "benefits": ["Rich in antioxidants", "Improves alertness"],
-    "side_effects": ["Caffeine-related jitteriness", "Stomach upset"]
-  },
-  {
-    "scientific_name": "Emilia fosbergii",
-    "local_names": ["Red Tasselflower"],
-    "uses": ["Traditional wound healing", "Anti-inflammatory"],
-    "benefits": ["May aid healing", "Reduces swelling"],
-    "side_effects": ["Limited data", "Possible allergic reactions"]
-  },
-  {
-    "scientific_name": "Arnica montana",
-    "local_names": ["Wolf's Bane"],
-    "uses": ["Bruise treatment", "Muscle pain relief"],
-    "benefits": ["Reduces bruising", "Soothes muscles"],
-    "side_effects": ["Skin irritation", "Internal toxicity"]
-  },
-  {
-    "scientific_name": "Arnica fulgens",
-    "local_names": ["Hillside Arnica"],
-    "uses": ["Pain relief", "Anti-inflammatory"],
-    "benefits": ["Soothes joints", "Reduces swelling"],
-    "side_effects": ["Skin irritation", "Not for internal use"]
-  },
-  {
-    "scientific_name": "Arnica angustifolia",
-    "local_names": ["Narrowleaf Arnica"],
-    "uses": ["Muscle soreness relief", "Bruise treatment"],
-    "benefits": ["Reduces pain", "Promotes healing"],
-    "side_effects": ["Skin sensitivity", "Toxicity if ingested"]
-  },
-  {
-    "scientific_name": "Arnica montana atlantica",
-    "local_names": ["Atlantic Arnica"],
-    "uses": ["Topical pain relief", "Anti-inflammatory"],
-    "benefits": ["Soothes muscles", "Reduces inflammation"],
-    "side_effects": ["Skin irritation", "Internal danger"]
-  },
-  {
-    "scientific_name": "Calendula officinalis",
-    "local_names": ["Pot Marigold"],
-    "uses": ["Skin healing", "Anti-inflammatory"],
-    "benefits": ["Promotes wound healing", "Soothes skin"],
-    "side_effects": ["Allergic reactions", "Mild drowsiness"]
-  },
-  {
-    "scientific_name": "Eucalyptus globulus",
-    "local_names": ["Tasmanian Blue Gum"],
-    "uses": ["Respiratory relief", "Antiseptic"],
-    "benefits": ["Clears airways", "Fights infections"],
-    "side_effects": ["Allergic reactions", "Toxicity if ingested"]
-  },
-  {
-    "scientific_name": "Eucalyptus bicostata",
-    "local_names": ["Victorian Blue Gum"],
-    "uses": ["Respiratory support", "Aromatherapy"],
-    "benefits": ["Eases breathing", "Relaxes mind"],
-    "side_effects": ["Skin irritation", "Internal toxicity"]
-  },
-  {
-    "scientific_name": "Silybum marianum",
-    "local_names": ["Milk Thistle"],
-    "uses": ["Liver support", "Detoxification"],
-    "benefits": ["Protects liver", "Antioxidant"],
-    "side_effects": ["Digestive upset", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Tilia cordata",
-    "local_names": ["Small-leaved Lime"],
-    "uses": ["Calming tea", "Cold relief"],
-    "benefits": ["Reduces anxiety", "Soothes throat"],
-    "side_effects": ["Drowsiness", "Rare heart issues"]
-  },
-  {
-    "scientific_name": "Achillea millefolium",
-    "local_names": ["Common Yarrow"],
-    "uses": ["Wound healing", "Fever reduction"],
-    "benefits": ["Stops bleeding", "Reduces fever"],
-    "side_effects": ["Skin irritation", "Photosensitivity"]
-  },
-  {
-    "scientific_name": "Crataegus monogyna",
-    "local_names": ["Common Hawthorn"],
-    "uses": ["Heart health", "Anxiety relief"],
-    "benefits": ["Supports circulation", "Calms nerves"],
-    "side_effects": ["Dizziness", "Low blood pressure"]
-  },
-  {
-    "scientific_name": "Passiflora incarnata",
-    "local_names": ["Purple Passionflower"],
-    "uses": ["Sleep aid", "Anxiety reduction"],
-    "benefits": ["Promotes relaxation", "Improves sleep"],
-    "side_effects": ["Drowsiness", "Confusion"]
-  },
-  {
-    "scientific_name": "Passiflora incarnata alba",
-    "local_names": ["White Passionflower"],
-    "uses": ["Sleep support", "Stress relief"],
-    "benefits": ["Calms nerves", "Aids rest"],
-    "side_effects": ["Drowsiness", "Nausea"]
-  },
-  {
-    "scientific_name": "Sambucus nigra",
-    "local_names": ["European Black Elderberry"],
-    "uses": ["Cold and flu relief", "Immune boost"],
-    "benefits": ["Fights viruses", "Supports immunity"],
-    "side_effects": ["Nausea", "Unripe fruit toxicity"]
-  },
-  {
-    "scientific_name": "Sambucus cerulea",
-    "local_names": ["Blue Elder"],
-    "uses": ["Immune support", "Cold remedy"],
-    "benefits": ["Antiviral properties", "Reduces symptoms"],
-    "side_effects": ["Digestive upset", "Toxicity if unripe"]
-  },
-  {
-    "scientific_name": "Sambucus canadensis",
-    "local_names": ["American Black Elderberry"],
-    "uses": ["Flu prevention", "Immune enhancement"],
-    "benefits": ["Reduces flu duration", "Boosts immunity"],
-    "side_effects": ["Nausea", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Withania somnifera",
-    "local_names": ["Rennet", "Ashwagandha"],
-    "uses": ["Stress relief", "Energy boost"],
-    "benefits": ["Reduces cortisol", "Enhances stamina"],
-    "side_effects": ["Stomach upset", "Drowsiness"]
-  },
-  {
-    "scientific_name": "Glycyrrhiza glabra",
-    "local_names": ["Cultivated Licorice"],
-    "uses": ["Sore throat relief", "Digestive aid"],
-    "benefits": ["Soothes throat", "Aids digestion"],
-    "side_effects": ["High blood pressure", "Water retention"]
-  },
-  {
-    "scientific_name": "Curcuma longa",
-    "local_names": ["Turmeric"],
-    "uses": ["Anti-inflammatory", "Joint pain relief"],
-    "benefits": ["Reduces inflammation", "Antioxidant"],
-    "side_effects": ["Stomach irritation", "Blood thinning"]
+    "local_names": [
+      "Common Thyme"
+    ],
+    "uses": [
+      "Respiratory support",
+      "Antiseptic"
+    ],
+    "benefits": [
+      "Clears airways",
+      "Fights infections"
+    ],
+    "side_effects": [
+      "Allergic reactions",
+      "Stomach irritation"
+    ]
   },
   {
     "scientific_name": "Ocimum basilicum",
-    "local_names": ["Sweet Basil"],
-    "uses": ["Digestive support", "Stress relief"],
-    "benefits": ["Aids digestion", "Calms nerves"],
-    "side_effects": ["Allergic reactions", "Low blood sugar"]
-  },
-  {
-    "scientific_name": "Foeniculum vulgare",
-    "local_names": ["Fennel"],
-    "uses": ["Digestive aid", "Lactation support"],
-    "benefits": ["Relieves bloating", "Supports milk production"],
-    "side_effects": ["Allergic reactions", "Seizures in excess"]
-  },
-  {
-    "scientific_name": "Plantago major",
-    "local_names": ["Greater Plantain"],
-    "uses": ["Wound healing", "Sore throat relief"],
-    "benefits": ["Soothes skin", "Reduces irritation"],
-    "side_effects": ["Rare allergic reactions"]
-  },
-  {
-    "scientific_name": "Taraxacum officinale",
-    "local_names": ["Common Dandelion"],
-    "uses": ["Liver detox", "Digestive support"],
-    "benefits": ["Supports liver function", "Aids digestion"],
-    "side_effects": ["Digestive upset", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Verbascum thapsus",
-    "local_names": ["Great Mullein"],
-    "uses": ["Respiratory relief", "Earache treatment"],
-    "benefits": ["Soothes coughs", "Eases ear pain"],
-    "side_effects": ["Skin irritation", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Melissa officinalis",
-    "local_names": ["Lemon Balm"],
-    "uses": ["Anxiety relief", "Sleep aid"],
-    "benefits": ["Calms mind", "Promotes sleep"],
-    "side_effects": ["Drowsiness", "Stomach upset"]
-  },
-  {
-    "scientific_name": "Melissa officinalis altissima",
-    "local_names": ["Tall Lemon Balm"],
-    "uses": ["Stress reduction", "Digestive aid"],
-    "benefits": ["Relaxes nerves", "Soothes digestion"],
-    "side_effects": ["Drowsiness", "Mild allergies"]
-  },
-  {
-    "scientific_name": "Cinnamomum verum",
-    "local_names": ["Ceylon Cinnamon"],
-    "uses": ["Blood sugar control", "Anti-inflammatory"],
-    "benefits": ["Regulates glucose", "Reduces inflammation"],
-    "side_effects": ["Low blood sugar", "Liver irritation"]
-  },
-  {
-    "scientific_name": "Artemisia annua",
-    "local_names": ["Sweet Annie"],
-    "uses": ["Malaria treatment", "Anti-parasitic"],
-    "benefits": ["Fights malaria", "Reduces parasites"],
-    "side_effects": ["Nausea", "Dizziness"]
-  },
-  {
-    "scientific_name": "Centella asiatica",
-    "local_names": ["Gotu Cola"],
-    "uses": ["Wound healing", "Cognitive support"],
-    "benefits": ["Improves skin repair", "Enhances memory"],
-    "side_effects": ["Drowsiness", "Skin irritation"]
-  },
-  {
-    "scientific_name": "Equisetum arvense",
-    "local_names": ["Field Horsetail"],
-    "uses": ["Bone health", "Diuretic"],
-    "benefits": ["Strengthens bones", "Promotes urination"],
-    "side_effects": ["Vitamin B1 deficiency", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Hyssopus officinalis",
-    "local_names": ["Hyssop"],
-    "uses": ["Respiratory relief", "Antiseptic"],
-    "benefits": ["Clears lungs", "Fights infections"],
-    "side_effects": ["Seizures in high doses", "Allergies"]
-  },
-  {
-    "scientific_name": "Hyssopus officinalis montanus",
-    "local_names": ["Mountain Hyssop"],
-    "uses": ["Cough relief", "Anti-inflammatory"],
-    "benefits": ["Soothes throat", "Reduces inflammation"],
-    "side_effects": ["Allergic reactions", "Toxicity in excess"]
-  },
-  {
-    "scientific_name": "Leonurus quinquelobatus",
-    "local_names": ["Five-bladed Motherwort"],
-    "uses": ["Heart support", "Anxiety relief"],
-    "benefits": ["Calms heart rate", "Reduces stress"],
-    "side_effects": ["Drowsiness", "Low blood pressure"]
-  },
-  {
-    "scientific_name": "Leonurus cardiaca",
-    "local_names": ["Common Motherwort"],
-    "uses": ["Heart health", "Menstrual support"],
-    "benefits": ["Regulates heartbeat", "Eases cramps"],
-    "side_effects": ["Drowsiness", "Digestive upset"]
-  },
-  {
-    "scientific_name": "Origanum vulgare",
-    "local_names": ["Oregano"],
-    "uses": ["Antibacterial", "Digestive aid"],
-    "benefits": ["Fights infections", "Aids digestion"],
-    "side_effects": ["Stomach irritation", "Allergies"]
-  },
-  {
-    "scientific_name": "Origanum vulgare virens",
-    "local_names": ["Green Oregano"],
-    "uses": ["Antiseptic", "Respiratory support"],
-    "benefits": ["Kills germs", "Clears airways"],
-    "side_effects": ["Allergic reactions", "Digestive discomfort"]
-  },
-  {
-    "scientific_name": "Piper nigrum",
-    "local_names": ["Black Pepper"],
-    "uses": ["Digestive stimulant", "Anti-inflammatory"],
-    "benefits": ["Enhances digestion", "Reduces inflammation"],
-    "side_effects": ["Stomach irritation", "Skin burn"]
-  },
-  {
-    "scientific_name": "Rheum × hybridum",
-    "local_names": ["Rhubarb"],
-    "uses": ["Digestive support", "Laxative"],
-    "benefits": ["Relieves constipation", "Aids digestion"],
-    "side_effects": ["Diarrhea", "Kidney stones"]
-  },
-  {
-    "scientific_name": "Rheum palmatum",
-    "local_names": ["Ornamental Rhubarb"],
-    "uses": ["Laxative", "Anti-inflammatory"],
-    "benefits": ["Promotes bowel movement", "Reduces swelling"],
-    "side_effects": ["Abdominal pain", "Electrolyte imbalance"]
-  },
-  {
-    "scientific_name": "Schisandra chinensis",
-    "local_names": ["Chinese Magnolia-vine"],
-    "uses": ["Liver protection", "Stress relief"],
-    "benefits": ["Supports liver", "Reduces fatigue"],
-    "side_effects": ["Heartburn", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Trifolium pratense",
-    "local_names": ["Red Clover"],
-    "uses": ["Menopausal support", "Blood purifier"],
-    "benefits": ["Eases hot flashes", "Detoxifies blood"],
-    "side_effects": ["Hormonal effects", "Bleeding risk"]
-  },
-  {
-    "scientific_name": "Vaccinium myrtillus",
-    "local_names": ["Common Bilberry"],
-    "uses": ["Eye health", "Antioxidant"],
-    "benefits": ["Improves vision", "Reduces oxidative stress"],
-    "side_effects": ["Mild stomach upset", "Allergies"]
-  },
-  {
-    "scientific_name": "Vitex agnus-castus",
-    "local_names": ["Lilac Chaste Tree"],
-    "uses": ["Hormonal balance", "Menstrual support"],
-    "benefits": ["Regulates cycles", "Reduces PMS"],
-    "side_effects": ["Nausea", "Headache"]
-  },
-  {
-    "scientific_name": "Althaea officinalis",
-    "local_names": ["Marsh Mallow"],
-    "uses": ["Sore throat relief", "Digestive aid"],
-    "benefits": ["Soothes throat", "Coats stomach"],
-    "side_effects": ["Rare allergies", "Low blood sugar"]
-  },
-  {
-    "scientific_name": "Astragalus mongholicus",
-    "local_names": ["Mongolian Milkvetch"],
-    "uses": ["Immune boost", "Energy support"],
-    "benefits": ["Enhances immunity", "Reduces fatigue"],
-    "side_effects": ["Digestive upset", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Borago officinalis",
-    "local_names": ["Borage"],
-    "uses": ["Skin health", "Anti-inflammatory"],
-    "benefits": ["Moisturizes skin", "Reduces inflammation"],
-    "side_effects": ["Liver toxicity", "Allergies"]
-  },
-  {
-    "scientific_name": "Capsicum annuum",
-    "local_names": ["Chili Pepper"],
-    "uses": ["Pain relief", "Circulation boost"],
-    "benefits": ["Reduces pain", "Improves blood flow"],
-    "side_effects": ["Stomach irritation", "Skin burn"]
-  },
-  {
-    "scientific_name": "Capsicum annuum glabriusculum",
-    "local_names": ["Bird Pepper"],
-    "uses": ["Digestive stimulant", "Pain relief"],
-    "benefits": ["Aids digestion", "Reduces pain"],
-    "side_effects": ["Irritation", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Coriandrum sativum",
-    "local_names": ["Coriander"],
-    "uses": ["Digestive aid", "Antioxidant"],
-    "benefits": ["Relieves bloating", "Reduces oxidative stress"],
-    "side_effects": ["Allergic reactions", "Skin sensitivity"]
-  },
-  {
-    "scientific_name": "Cymbopogon citratus",
-    "local_names": ["Lemon Grass"],
-    "uses": ["Fever reduction", "Digestive support"],
-    "benefits": ["Lowers fever", "Aids digestion"],
-    "side_effects": ["Allergies", "Drowsiness"]
-  },
-  {
-    "scientific_name": "Euphrasia officinalis",
-    "local_names": ["Eyebright"],
-    "uses": ["Eye inflammation", "Cold relief"],
-    "benefits": ["Soothes eyes", "Reduces cold symptoms"],
-    "side_effects": ["Eye irritation", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Euphrasia nemorosa",
-    "local_names": ["Common Eyebright"],
-    "uses": ["Eye health", "Respiratory support"],
-    "benefits": ["Relieves eye strain", "Clears airways"],
-    "side_effects": ["Eye discomfort", "Allergies"]
-  },
-  {
-    "scientific_name": "Galium aparine",
-    "local_names": ["Catchweed Bedstraw"],
-    "uses": ["Detoxification", "Skin health"],
-    "benefits": ["Supports kidney function", "Soothes skin"],
-    "side_effects": ["Skin irritation", "Digestive upset"]
-  },
-  {
-    "scientific_name": "Harpagophytum zeyheri sublobatum",
-    "local_names": ["Common Savanna Devilclaw"],
-    "uses": ["Joint pain relief", "Anti-inflammatory"],
-    "benefits": ["Reduces arthritis pain", "Decreases swelling"],
-    "side_effects": ["Digestive issues", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Harpagophytum procumbens transvaalense",
-    "local_names": ["Limpopo Kalahari Devilclaw"],
-    "uses": ["Pain relief", "Anti-inflammatory"],
-    "benefits": ["Eases joint pain", "Reduces inflammation"],
-    "side_effects": ["Stomach upset", "Headache"]
-  },
-  {
-    "scientific_name": "Harpagophytum procumbens",
-    "local_names": ["Kalahari Devilclaw"],
-    "uses": ["Back pain relief", "Anti-inflammatory"],
-    "benefits": ["Soothes joints", "Reduces swelling"],
-    "side_effects": ["Digestive discomfort", "Allergies"]
-  },
-  {
-    "scientific_name": "Harpagophytum procumbens procumbens",
-    "local_names": ["Common Kalahari Devilclaw"],
-    "uses": ["Joint support", "Pain management"],
-    "benefits": ["Reduces arthritis", "Eases pain"],
-    "side_effects": ["Stomach irritation", "Rare allergic reactions"]
-  },
-  {
-    "scientific_name": "Lippia alba",
-    "local_names": ["Bushy Lippia"],
-    "uses": ["Anxiety relief", "Digestive aid"],
-    "benefits": ["Calms nerves", "Aids digestion"],
-    "side_effects": ["Drowsiness", "Allergic reactions"]
-  },
-  {
-    "scientific_name": "Marrubium vulgare",
-    "local_names": ["White Horehound"],
-    "uses": ["Cough relief", "Digestive support"],
-    "benefits": ["Soothes throat", "Aids digestion"],
-    "side_effects": ["Heart palpitations", "Allergies"]
-  },
-  {
-    "scientific_name": "Symphytum officinale",
-    "local_names": ["Common Comfrey"],
-    "uses": ["Wound healing", "Joint pain relief"],
-    "benefits": ["Promotes healing", "Soothes joints"],
-    "side_effects": ["Liver toxicity", "Not for internal use"]
-  },
-  {
-    "scientific_name": "Symphytum × hidcotense",
-    "local_names": ["Hidcote Comfrey"],
-    "uses": ["Skin repair", "Anti-inflammatory"],
-    "benefits": ["Heals wounds", "Reduces swelling"],
-    "side_effects": ["Liver damage", "Skin irritation"]
+    "local_names": [
+      "Sweet Basil"
+    ],
+    "uses": [
+      "Digestive support",
+      "Stress relief"
+    ],
+    "benefits": [
+      "Aids digestion",
+      "Calms nerves"
+    ],
+    "side_effects": [
+      "Allergic reactions",
+      "Low blood sugar"
+    ]
   }
 ]

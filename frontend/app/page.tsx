@@ -74,13 +74,6 @@ export default function LandingPage() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 px-8 py-3"
-                >
-                  Watch Demo
-                </Button>
               </div>
             </div>
 
@@ -95,7 +88,7 @@ export default function LandingPage() {
                 {/* Main Image */}
                 <div className="relative h-full w-full">
                   <img
-                    src="/placeholder.jpg"
+                    src="/aloe-hero.png"
                     alt="Medicinal Plant"
                     style={{ width: '100%', height: '100%' }}
                     className="object-cover transform hover:scale-105 transition-transform duration-700 ease-out"
@@ -351,13 +344,6 @@ export default function LandingPage() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10 px-8 py-3 transform hover:scale-105 transition-all duration-300"
-            >
-              Learn More
-            </Button>
           </div>
         </div>
       </section>
