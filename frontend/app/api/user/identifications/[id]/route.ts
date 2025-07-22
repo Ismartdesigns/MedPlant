@@ -16,7 +16,7 @@ export async function DELETE(
       )
     }
 
-    const response = await fetch(`${process.env.FASTAPI_URL}/api/user/identifications/${params.id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_FASTAPI_URL}/api/user/identifications/${params.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -37,6 +37,7 @@ export async function DELETE(
       { status: 200 }
     )
   } catch (error) {
+    console.error('Delete identification error:', error)
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
