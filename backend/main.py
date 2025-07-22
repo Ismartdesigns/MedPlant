@@ -157,32 +157,47 @@ async def identify_plant(
         # Load model if not loaded
         load_model_once()
         
-        # Save file temporarily
-        contents = await file.read()
-        os.makedirs("temp", exist_ok=True)
-        temp_location = os.path.join("temp", file.filename)
-        with open(temp_location, "wb+") as file_object:
-            file_object.write(contents)
+        # Create temp directory with cleanup
+        temp_dir = "temp"
+        os.makedirs(temp_dir, exist_ok=True)
+        temp_location = os.path.join(temp_dir, file.filename)
         
-        # Get prediction
-        prediction = model.predict(temp_location)
-        logger.info(f"Prediction result: {prediction}")
-        predicted_idx = prediction.get("predicted_idx", -1)
-        confidence = prediction.get("confidence", 0.0)
-        
-        # Upload to Cloudinary
-        upload_result = cloudinary.uploader.upload(temp_location)
-        image_url = upload_result['secure_url']
-        
-        # Remove temporary file
-        os.remove(temp_location)
+        try:
+            # Read file in chunks to save memory
+            chunk_size = 1024 * 1024  # 1MB chunks
+            with open(temp_location, "wb") as file_object:
+                while chunk := await file.read(chunk_size):
+                    file_object.write(chunk)
+            
+            # Get prediction
+            prediction = model.predict(temp_location)
+            logger.info(f"Prediction result: {prediction}")
+            predicted_idx = prediction.get("predicted_idx", -1)
+            confidence = prediction.get("confidence", 0.0)
+            
+            # Upload to Cloudinary with resource type auto
+            upload_result = cloudinary.uploader.upload(
+                temp_location,
+                resource_type="auto",
+                chunk_size=chunk_size
+            )
+            image_url = upload_result['secure_url']
+        finally:
+            # Ensure temp file is removed
+            if os.path.exists(temp_location):
+                os.remove(temp_location)
         
         # Validate and map index to scientific name
         if predicted_idx < 0 or predicted_idx >= len(idx_to_label):
             logger.error(f"Invalid prediction index: {predicted_idx}, confidence: {confidence}")
             raise ValueError(f"Invalid prediction index: {predicted_idx}. Falling back to unknown.")
+        
         scientific_name = idx_to_label.get(predicted_idx, f"unknown_class_{predicted_idx}")
-        plant_name = next((entry["common_name"] for entry in inaturalist_data if entry["scientific_name"].lower().strip() == scientific_name), scientific_name.split()[-1])
+        plant_name = next(
+            (entry["common_name"] for entry in inaturalist_data 
+             if entry["scientific_name"].lower().strip() == scientific_name),
+            scientific_name.split()[-1]
+        )
         
         # Get medicinal data
         medicinal_info = get_medicinal_data().get(scientific_name, {
@@ -191,52 +206,47 @@ async def identify_plant(
             "benefits": [],
             "side_effects": []
         })
-        enriched_prediction = {
-            "plant_name": plant_name,
-            "scientific_name": scientific_name,
-            "confidence": confidence,
-            "local_names": medicinal_info.get("local_names", []),
-            "uses": medicinal_info.get("uses", []),
-            "benefits": medicinal_info.get("benefits", []),
-            "side_effects": medicinal_info.get("side_effects", [])
-        }
         
         # Create identification record
         identification = PlantIdentification(
-            plant_name=enriched_prediction["plant_name"],
-            scientific_name=enriched_prediction["scientific_name"],
-            confidence_score=enriched_prediction["confidence"],
+            plant_name=plant_name,
+            scientific_name=scientific_name,
+            confidence_score=confidence,
             image_url=image_url,
-            local_names=", ".join(enriched_prediction["local_names"]) if enriched_prediction["local_names"] else None,
-            uses=", ".join(enriched_prediction["uses"]) if enriched_prediction["uses"] else None,
-            benefits=", ".join(enriched_prediction["benefits"]) if enriched_prediction["benefits"] else None,
-            side_effects=", ".join(enriched_prediction["side_effects"]) if enriched_prediction["side_effects"] else None,
+            local_names=", ".join(medicinal_info.get("local_names", [])) or None,
+            uses=", ".join(medicinal_info.get("uses", [])) or None,
+            benefits=", ".join(medicinal_info.get("benefits", [])) or None,
+            side_effects=", ".join(medicinal_info.get("side_effects", [])) or None,
             user_id=current_user.id
         )
-        db.add(identification)
         
         # Create activity record
         activity = Activity(
             user_id=current_user.id,
             action=f"Identified {plant_name} ({scientific_name}) with {round(confidence * 100)}% confidence"
         )
-        db.add(activity)
         
+        # Batch database operations
+        db.add(identification)
+        db.add(activity)
         db.commit()
         db.refresh(identification)
+        
+        # Clean up memory
+        torch.cuda.empty_cache() if torch.cuda.is_available() else None
         
         return {
             "status": "success",
             "message": "Plant identification completed",
             "data": {
-                "plant_name": enriched_prediction["plant_name"],
-                "confidence": enriched_prediction["confidence"],
+                "plant_name": plant_name,
+                "confidence": confidence,
                 "details": {
-                    "scientific_name": enriched_prediction["scientific_name"],
-                    "local_names": enriched_prediction["local_names"],
-                    "uses": enriched_prediction["uses"],
-                    "benefits": enriched_prediction["benefits"],
-                    "side_effects": enriched_prediction["side_effects"]
+                    "scientific_name": scientific_name,
+                    "local_names": medicinal_info.get("local_names", []),
+                    "uses": medicinal_info.get("uses", []),
+                    "benefits": medicinal_info.get("benefits", []),
+                    "side_effects": medicinal_info.get("side_effects", [])
                 },
                 "image_url": image_url
             }
