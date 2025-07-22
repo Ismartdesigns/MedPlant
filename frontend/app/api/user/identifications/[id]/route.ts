@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { API_ENDPOINTS, getAuthHeaders, handleApiResponse } from '@/lib/api-config'
+import { API_ENDPOINTS, getAuthHeaders } from '@/lib/api-config'
 
 export async function DELETE(
   request: Request,
@@ -22,28 +22,23 @@ export async function DELETE(
       headers: getAuthHeaders(token),
     })
 
+    const data = await response.json()
+
     if (response.ok) {
       return NextResponse.json(
-        { message: 'Identification deleted successfully' },
+        { message: data.message || 'Identification deleted successfully' },
         { status: 200 }
       )
     }
 
-    const errorData = await response.json()
     return NextResponse.json(
-      { message: errorData.message || 'Failed to delete identification' },
+      { message: data.message || data.detail || 'Failed to delete identification' },
       { status: response.status }
     )
   } catch (error) {
     console.error('Delete identification error:', error)
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error instanceof Response ? error.status : 500 }
-      )
-    }
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     )
   }

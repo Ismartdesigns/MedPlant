@@ -69,16 +69,17 @@ export function RecentIdentifications() {
         credentials: 'include',
       })
       
+      const data = await response.json()
+      
       if (response.ok) {
         setIdentifications(prev => prev.filter(item => item.id !== id))
         toast({
           title: "Success",
-          description: "Plant identification deleted successfully",
+          description: data.message || "Plant identification deleted successfully",
         })
         return
       }
 
-      const data = await response.json()
       throw new Error(data.message || 'Failed to delete identification')
     } catch (error) {
       console.error('Delete error:', error)
